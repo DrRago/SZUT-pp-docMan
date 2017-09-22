@@ -1,12 +1,11 @@
 package DatabaseUtility;
 
+import Document.Archive;
 import Document.Document;
 import Document.Tag;
-import Document.Archive;
 
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -20,9 +19,38 @@ public class DatabaseUtility {
         conn = DriverManager.getConnection(path);
     }
 
+    private Archive getArchiveFromID(final int ARCHIVEID) throws SQLException {
+        if (ARCHIVEID != 0) {
+            ResultSet archiveRS = conn.createStatement().executeQuery("SELECT * FROM Archive WHERE ID='" + ARCHIVEID + "'");
+
+            archiveRS.next();
+            final long ID = archiveRS.getInt("ID");
+            final String SHED = archiveRS.getString("shed");
+            final String RACK = archiveRS.getString("rack");
+            final String FOLDER = archiveRS.getString("folder");
+
+            return new Archive(ID, SHED, RACK, FOLDER);
+        }
+        return null;
+    }
+
+    private List<Tag> getTaglistFromDocumentID(final String ID) throws SQLException {
+        final List<Tag> TAGS = new ArrayList<Tag>();
+
+        ResultSet tagReferenceRS = conn.createStatement().executeQuery("SELECT TagID FROM TagReference WHERE DocumentID='" + ID + "'");
+
+        while (tagReferenceRS.next()) {
+            ResultSet tagRS = conn.createStatement().executeQuery("SELECT * FROM Tag WHERE ID='" + tagReferenceRS.getInt("TagID") + "'");
+
+            tagRS.next();
+            TAGS.add(new Tag(tagRS.getInt("ID"), tagRS.getString("Name")));
+        }
+
+        return TAGS;
+    }
+
     public List<Document> read() throws SQLException {
-        Statement stmt = conn.createStatement();
-        ResultSet rs = stmt.executeQuery("SELECT * FROM Document");
+        ResultSet rs = conn.createStatement().executeQuery("SELECT * FROM Document");
 
         List<Document> documentList = new ArrayList<Document>();
 
@@ -33,103 +61,34 @@ public class DatabaseUtility {
             final String FILE = rs.getString("FilePath");
             final String URL = rs.getString("URL");
 
-            final int ARCHIVEID = rs.getInt("Archive");
+            final Archive ARCHIVE = getArchiveFromID(rs.getInt("Archive"));
 
-            Archive archive = null;
+            final List<Tag> TAGS = getTaglistFromDocumentID(ID);
 
-            final List<Tag> TAGLIST = new ArrayList<Tag>();
-
-            if (ARCHIVEID != 0) {
-                ResultSet archiveRS = stmt.executeQuery("SELECT * FROM Archive WHERE ID='" + ARCHIVEID + "'");
-                while (archiveRS.next()) {
-                    final String SHED = archiveRS.getString("shed");
-                    final String RACK = archiveRS.getString("rack");
-                    final String FOLDER = archiveRS.getString("folder");
-
-                    archive = new Archive(SHED, RACK, FOLDER);
-                }
-            }
-
-            ResultSet tagReferenceRS = stmt.executeQuery("SELECT TagID FROM TagReference WHERE DocumentID='" + ID + "'");
-
-            while (tagReferenceRS.next()) {
-                ResultSet tagRS = stmt.executeQuery("SELECT * FROM Tag WHERE ID='"+ tagReferenceRS.getInt("TagID") + "'");
-
-                while (tagRS.next()) {
-                    TAGLIST.add(new Tag(tagRS.getInt("ID"), tagRS.getString("Name")));
-                }
-            }
-
-
-            documentList.add(new Document(ID, TITLE, AUTHOR, FILE, URL, archive, TAGLIST));
+            documentList.add(new Document(ID, TITLE, AUTHOR, FILE, URL, ARCHIVE, TAGS));
         }
-
         return documentList;
     }
 
+    public void removeIDFromTable(final String TABLE, final int ID) throws SQLException {
+        conn.createStatement().execute(String.format("DELETE FROM %s WHERE ID='%d'", TABLE, ID));
+    }
+
+    public void update(final Archive ARCHIVE) throws SQLException {
+        conn.createStatement().execute(String.format("UPDATE Archive SET shed='%s', rack=%s, folder=%s WHERE ID='%d'", ARCHIVE.getShed(), ARCHIVE.getRack(), ARCHIVE.getFolder(), ARCHIVE.getId()));
+    }
+
+    public void update(final Tag TAG) throws SQLException {
+        conn.createStatement().execute(String.format("UPDATE Tag SET Name='%s' WHERE ID='%d'", TAG.getName(), TAG.getId()));
+    }
+
+    public void update(final Document DOCUMENT) {
+
+    }
+
     public List<Document> search(List<Tag> tags) throws SQLException {
-        /// TODO: 15.09.2017 merge with read when working properly
-        Statement stmt = conn.createStatement();
-        ResultSet rs = stmt.executeQuery("SELECT * FROM Document");
-
-        List<Document> documentList = new ArrayList<Document>();
-
-        while (rs.next()) {
-            final String ID = rs.getString("ID");
-            final String TITLE = rs.getString("Title");
-            final String AUTHOR = rs.getString("Author");
-            final String FILE = rs.getString("FilePath");
-            final String URL = rs.getString("URL");
-
-            final int ARCHIVEID = rs.getInt("Archive");
-
-            Archive archive = null;
-
-            List<Tag> TAGLIST = new ArrayList<Tag>();
-
-            if (ARCHIVEID != 0) {
-                ResultSet archiveRS = stmt.executeQuery("SELECT * FROM Archive WHERE ID='" + ARCHIVEID + "'");
-                while (archiveRS.next()) {
-                    final String SHED = archiveRS.getString("shed");
-                    final String RACK = archiveRS.getString("rack");
-                    final String FOLDER = archiveRS.getString("folder");
-
-                    archive = new Archive(SHED, RACK, FOLDER);
-                }
-            }
-
-            ResultSet tagReferenceRS = stmt.executeQuery("SELECT TagID FROM TagReference WHERE DocumentID='" + ID + "'");
-
-            while (tagReferenceRS.next()) {
-                ResultSet tagRS = stmt.executeQuery("SELECT * FROM Tag WHERE ID='"+ tagReferenceRS.getInt("TagID") + "'");
-
-                while (tagRS.next()) {
-                    TAGLIST.add(new Tag(tagRS.getInt("ID"), tagRS.getString("Name")));
-                }
-            }
-
-            TAGLIST = new ArrayList<Tag>();
-            TAGLIST.add(new Tag(0, "Book"));
-            TAGLIST.add(new Tag(5, "Porn"));
-
-            System.out.println("TAGLIST:");
-            System.out.println(TAGLIST.get(0).getId());
-            System.out.println(TAGLIST.get(0).getName());
-            System.out.println(TAGLIST.get(1).getId());
-            System.out.println(TAGLIST.get(1).getName());
-            System.out.println("\ntags");
-            System.out.println(tags.get(0).getId());
-            System.out.println(tags.get(0).getName());
-            System.out.println(tags.get(1).getId());
-            System.out.println(tags.get(1).getName());
-
-            System.out.println(TAGLIST.containsAll(tags));
-
-            if ((TAGLIST.containsAll(tags))){
-                System.out.println("HEE");
-                documentList.add(new Document(ID, TITLE, AUTHOR, FILE, URL, archive, TAGLIST));}
-        }
-
+        List<Document> documentList = this.read();
+        documentList.removeIf(e -> !e.getTags().containsAll(tags));
         return documentList;
     }
 }
