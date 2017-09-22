@@ -1,6 +1,10 @@
 import DatabaseUtility.DatabaseUtility;
+import Document.Tag;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
 
 /**
  * @author Leonhard Gahr
@@ -8,9 +12,13 @@ import java.sql.SQLException;
  * @author Marcel Lillig
  */
 public class Run {
-    public static void main(String[] args) throws SQLException, ClassNotFoundException {
-        DatabaseUtility db = new DatabaseUtility("jdbc:sqlite:C:\\Users\\Leonhard.Gahr\\IdeaProjects\\DocMann\\src\\main\\resources\\testdb.db3");
 
-        System.out.println(db.read().get(0).getArchive().getShed());
+
+    public static void main(String[] args) throws SQLException, ClassNotFoundException {
+        DatabaseUtility db = new DatabaseUtility("jdbc:sqlite:C:\\Users\\Pascal\\IdeaProjects\\DocMan\\src\\main\\resources\\testdb.db3");
+        List<Tag> tagList = new ArrayList<Tag>();
+        tagList.add(new Tag(0, "Book"));
+        tagList.add(new Tag(5, "Porn"));
+        db.search(tagList);
     }
 }

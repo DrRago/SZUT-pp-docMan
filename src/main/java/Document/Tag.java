@@ -4,7 +4,7 @@ package Document;
  * @author Leonhard Gahr
  * @author Marcel Lillig
  */
-public class Tag {
+public class Tag implements Comparable<Tag> {
     private long id;
     private String name;
 
@@ -19,6 +19,12 @@ public class Tag {
 
     public String getName() {
         return name;
+    }
+
+    @Override
+    public int compareTo(Tag tag){
+        System.out.println(Long.compare(id,tag.id));
+        return Long.compare(id,tag.id);
     }
 
 }
