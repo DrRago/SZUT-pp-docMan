@@ -1,5 +1,7 @@
 package Document;
 
+import Location.Location;
+
 import java.util.List;
 
 
@@ -11,18 +13,14 @@ public class Document {
     private String id;
     private String title;
     private String author;
-    private String filePath;
-    private String URL;
-    private Archive archive;
+    private Location location;
     private List<Tag> tags;
 
-    public Document(final String ID, final String TITLE, final String AUTHOR, final String FILEPATH, final String URL, final Archive ARCHIVE, final List<Tag> TAGS){
+    public Document(final String ID, final String TITLE, final String AUTHOR, final Location LOCATION, final List<Tag> TAGS) {
         this.id = ID;
         this.title = TITLE;
         this.author = AUTHOR;
-        this.filePath = FILEPATH;
-        this.URL = URL;
-        this.archive = ARCHIVE;
+        this.location = LOCATION;
         this.tags = TAGS;
     }
 
@@ -42,19 +40,18 @@ public class Document {
         return author;
     }
 
-    public String getFilePath() {
-        return filePath;
-    }
-
-    public String getURL() {
-        return URL;
-    }
-
-    public Archive getArchive() {
-        return archive;
+    public Location getLocation() {
+        return location;
     }
 
     public List<Tag> getTags() {
         return tags;
+    }
+
+    //TODO REMOVE METHOD
+
+    @Override
+    public String toString() {
+        return "Document " + this.id;
     }
 }

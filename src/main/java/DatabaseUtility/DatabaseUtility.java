@@ -1,10 +1,13 @@
 package DatabaseUtility;
 
-import Document.Archive;
 import Document.Document;
 import Document.Tag;
+import Location.*;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -58,14 +61,22 @@ public class DatabaseUtility {
             final String ID = rs.getString("ID");
             final String TITLE = rs.getString("Title");
             final String AUTHOR = rs.getString("Author");
-            final String FILE = rs.getString("FilePath");
-            final String URL = rs.getString("URL");
+            final Location LOCATION = new Location();
 
-            final Archive ARCHIVE = getArchiveFromID(rs.getInt("Archive"));
+            switch (rs.getInt("LocationType")){
+                case 0:
+                    LOCATION.setLocation(new File(rs.getString("FilePath")));
+                    break;
+                case 1:
+                    LOCATION.setLocation(new URL(rs.getString("URL")));
+                    break;
+                case 2:
+                    LOCATION.setLocation(getArchiveFromID(rs.getInt("Archive")));
+            }
 
             final List<Tag> TAGS = getTaglistFromDocumentID(ID);
 
-            documentList.add(new Document(ID, TITLE, AUTHOR, FILE, URL, ARCHIVE, TAGS));
+            documentList.add(new Document(ID, TITLE, AUTHOR, LOCATION, TAGS));
         }
         return documentList;
     }

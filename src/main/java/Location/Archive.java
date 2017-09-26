@@ -1,4 +1,4 @@
-package Document;
+package Location;
 
 /**
  * @author Leonhard Gahr
