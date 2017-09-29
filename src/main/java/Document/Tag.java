@@ -30,6 +30,6 @@ public class Tag {
     public boolean equals(Object obj) {
         assert obj.getClass() == Tag.class;
         Tag tag = (Tag) obj;
-        return ((id == tag.id) & (name.equals(tag.name)));
+        return name.equals(tag.name);
     }
 }

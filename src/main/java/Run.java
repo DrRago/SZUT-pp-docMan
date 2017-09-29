@@ -1,4 +1,5 @@
 import DatabaseUtility.DatabaseUtility;
+import Document.Document;
 import Document.Tag;
 
 import java.sql.SQLException;
@@ -19,6 +20,7 @@ public class Run {
         List<Tag> tagList = new ArrayList<>();
         tagList.add(new Tag(2, "Tagggggg"));
         tagList.add(new Tag(1, "TestTag"));
+        Document doc = db.read().get(0);
         System.out.println(db.search(tagList));
     }
 }

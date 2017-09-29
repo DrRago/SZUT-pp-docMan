@@ -4,7 +4,7 @@ package Location;
  * @author Leonhard Gahr
  * @author Marcel Lillig
  */
-public class Archive {
+public class Archive implements Location {
     private long id;
     private String shed;
     private String rack;
@@ -36,5 +36,15 @@ public class Archive {
 
     public String getFolder() {
         return folder;
+    }
+
+    @Override
+    public String getLocation() {
+        return this.toString();
+    }
+
+    @Override
+    public Object getLocationObject() {
+        return this;
     }
 }

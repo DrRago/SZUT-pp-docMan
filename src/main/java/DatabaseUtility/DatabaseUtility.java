@@ -2,7 +2,10 @@ package DatabaseUtility;
 
 import Document.Document;
 import Document.Tag;
-import Location.*;
+import Location.Archive;
+import Location.Location;
+import Location.LocationFactory;
+import Location.LocationTypes;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -22,7 +25,7 @@ public class DatabaseUtility {
         conn = DriverManager.getConnection(path);
     }
 
-    private Archive getArchiveFromID(final int ARCHIVEID) throws SQLException {
+    private String[] getArchiveFromID(final int ARCHIVEID) throws SQLException {
         if (ARCHIVEID != 0) {
             ResultSet archiveRS = conn.createStatement().executeQuery("SELECT * FROM Archive WHERE ID='" + ARCHIVEID + "'");
 
@@ -32,7 +35,7 @@ public class DatabaseUtility {
             final String RACK = archiveRS.getString("rack");
             final String FOLDER = archiveRS.getString("folder");
 
-            return new Archive(ID, SHED, RACK, FOLDER);
+            return new String[]{Long.toString(ID), SHED, RACK, FOLDER};
         }
         return null;
     }
@@ -61,22 +64,25 @@ public class DatabaseUtility {
             final String ID = rs.getString("ID");
             final String TITLE = rs.getString("Title");
             final String AUTHOR = rs.getString("Author");
-            final Location LOCATION = new Location();
+            Location location;
 
             switch (rs.getInt("LocationType")){
                 case 0:
-                    LOCATION.setLocation(new File(rs.getString("FilePath")));
+                    location = LocationFactory.getLocation(LocationTypes.FILE, new String[]{rs.getString("FilePath")});
                     break;
                 case 1:
-                    LOCATION.setLocation(new URL(rs.getString("URL")));
+                    location = LocationFactory.getLocation(LocationTypes.URL, new String[]{rs.getString("URL")});
                     break;
                 case 2:
-                    LOCATION.setLocation(getArchiveFromID(rs.getInt("Archive")));
+                    location = LocationFactory.getLocation(LocationTypes.ARCHIVE, getArchiveFromID(rs.getInt("Archive")));
+                    break;
+                default:
+                    throw new IllegalArgumentException("Location type not defined in database");
             }
 
             final List<Tag> TAGS = getTaglistFromDocumentID(ID);
 
-            documentList.add(new Document(ID, TITLE, AUTHOR, LOCATION, TAGS));
+            documentList.add(new Document(ID, TITLE, AUTHOR, location, TAGS));
         }
         return documentList;
     }
