@@ -88,6 +88,10 @@ public class DatabaseUtility {
         conn.createStatement().execute(String.format("DELETE FROM %s WHERE ID='%d'", TABLE, ID));
     }
 
+    public void deleteCodument(final String ID) {
+        // TODO
+    }
+
     public void update(final Archive ARCHIVE) throws SQLException {
         conn.createStatement().execute(String.format("UPDATE Archive SET shed='%s', rack=%s, folder=%s WHERE ID='%d'", ARCHIVE.getShed(), ARCHIVE.getRack(), ARCHIVE.getFolder(), ARCHIVE.getId()));
     }
