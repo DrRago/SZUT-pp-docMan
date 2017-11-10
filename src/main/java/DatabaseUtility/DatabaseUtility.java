@@ -66,7 +66,7 @@ public class DatabaseUtility {
             final String AUTHOR = rs.getString("Author");
             Location location;
 
-            switch (rs.getInt("LocationType")){
+            switch (rs.getInt("LocationType")) {
                 case 0:
                     location = LocationFactory.getLocation(LocationTypes.FILE, new String[]{rs.getString("FilePath")});
                     break;
@@ -103,9 +103,32 @@ public class DatabaseUtility {
 
     }
 
-    public List<Document> search(List<Tag> tags) throws SQLException {
-        List<Document> documentList = this.read();
-        documentList.removeIf(e -> !e.getTags().containsAll(tags));
-        return documentList;
+    public List<Document> search(final String ID, final List<Tag> tags, final String location, final String title, final String author) throws SQLException {
+        final List<Document> documents = this.read();
+
+        // filter ID
+        if (!ID.isEmpty()) {
+            documents.removeIf(e -> !e.getID().equals(ID));
+        }
+
+        // filter Tags (removes nothing if tags is empty
+        documents.removeIf(e -> !e.getTags().containsAll(tags));
+
+        // filter location
+        if (!location.isEmpty()) {
+            documents.removeIf(e -> !e.getLocation().getLocation().equals(location));
+        }
+
+        // filter title
+        if (!title.isEmpty()) {
+            documents.removeIf(e -> !e.getTitle().equals(title));
+        }
+
+        // filter author
+        if (!author.isEmpty()) {
+            documents.removeIf(e -> !e.getAuthor().equals(author));
+        }
+
+        return documents;
     }
 }
