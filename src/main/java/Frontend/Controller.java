@@ -5,6 +5,7 @@ import Document.Document;
 import config.Config;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.MapValueFactory;
@@ -98,7 +99,7 @@ public class Controller {
         objectTable.setItems(generateDataInMap());
     }
 
-    public void updateContent(MouseEvent mouseEvent) {
+    public void updateContent() {
         String id = objectTable.getFocusModel().getFocusedItem().get("ID");
         documentList.forEach(e -> {
             if (e.getID().equals(id)) {
@@ -109,5 +110,12 @@ public class Controller {
                 textLocation.setText(e.getLocation().getLocation());
             }
         });
+    }
+
+    public void deleteAction(ActionEvent actionEvent) {
+        String id = objectTable.getFocusModel().getFocusedItem().get("ID");
+        db.deleteDocument(id);
+        updateTable();
+        updateContent();
     }
 }

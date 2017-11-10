@@ -70,7 +70,7 @@
                                     <Insets />
                                  </opaqueInsets>
                               </Button>
-                            <Button fx:id="buttonDelete" minWidth="57.0" mnemonicParsing="false" prefHeight="25.0" text="delete" />
+                            <Button fx:id="buttonDelete" minWidth="57.0" mnemonicParsing="false" onAction="#deleteAction" prefHeight="25.0" text="delete" />
                           </buttons>
                         </ButtonBar>
                         <ButtonBar minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" GridPane.columnIndex="1">
