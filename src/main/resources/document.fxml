@@ -11,8 +11,7 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
 
-
-<GridPane minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/8.0.102" xmlns:fx="http://javafx.com/fxml/1">
+<GridPane minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1">
    <columnConstraints>
       <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
    </columnConstraints>
@@ -34,12 +33,12 @@
                       <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER" />
                     </rowConstraints>
                      <children>
-                        <TextField>
+                        <TextField fx:id="locationTextFile">
                            <GridPane.margin>
                               <Insets left="5.0" right="5.0" />
                            </GridPane.margin>
                         </TextField>
-                        <Button mnemonicParsing="false" text="Button" GridPane.columnIndex="1">
+                        <Button fx:id="locationFileOpen" mnemonicParsing="false" text="open" GridPane.columnIndex="1">
                            <GridPane.margin>
                               <Insets left="5.0" right="5.0" />
                            </GridPane.margin>
@@ -62,16 +61,11 @@
                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER" />
                      </rowConstraints>
                      <children>
-                        <TextField>
+                        <TextField fx:id="locationUrlText">
                            <GridPane.margin>
                               <Insets left="5.0" right="5.0" />
                            </GridPane.margin>
                         </TextField>
-                        <Button mnemonicParsing="false" text="Button" GridPane.columnIndex="1">
-                           <GridPane.margin>
-                              <Insets left="5.0" right="5.0" />
-                           </GridPane.margin>
-                        </Button>
                      </children>
                      <padding>
                         <Insets top="10.0" />
@@ -107,9 +101,9 @@
                               <Insets left="5.0" right="5.0" />
                            </GridPane.margin>
                         </Label>
-                        <TextField GridPane.columnIndex="1" />
-                        <TextField GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                        <TextField GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                        <TextField fx:id="locationArchiveShed" GridPane.columnIndex="1" />
+                        <TextField fx:id="locationArchiveReck" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                        <TextField fx:id="locationArchiveFolder" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                      </children>
                   </GridPane>
                </content>
@@ -118,8 +112,8 @@
       </TabPane>
       <ButtonBar prefHeight="40.0" prefWidth="200.0" GridPane.rowIndex="1">
         <buttons>
-          <Button mnemonicParsing="false" text="Cancel" />
-            <Button mnemonicParsing="false" text="OK" />
+          <Button fx:id="locationCancel" mnemonicParsing="false" text="Cancel" />
+            <Button fx:id="locationOK" mnemonicParsing="false" text="OK" />
         </buttons>
       </ButtonBar>
    </children>

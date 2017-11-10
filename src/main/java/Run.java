@@ -22,7 +22,7 @@ public class Run {
         tagList.add(new Tag(2, "Tagggggg"));
         tagList.add(new Tag(1, "TestTag"));
         Document doc = db.read().get(0);
-        System.out.println(db.search(doc.getLocation(), db.read()));
+        System.out.println();
 
         System.out.println("".isEmpty());
     }

@@ -19,7 +19,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<SplitPane dividerPositions="0.6049382716049383" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="325.0" minWidth="200.0" orientation="VERTICAL" prefHeight="650.0" prefWidth="430.0" xmlns="http://javafx.com/javafx/8.0.102" xmlns:fx="http://javafx.com/fxml/1">
+<SplitPane dividerPositions="0.6049382716049383" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="325.0" minWidth="200.0" orientation="VERTICAL" prefHeight="650.0" prefWidth="430.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Frontend.Controller">
   <items>
     <AnchorPane minHeight="200.0" minWidth="-Infinity" prefHeight="377.0" prefWidth="428.0">
          <children>
@@ -44,11 +44,11 @@
                       </Menu>
                     </menus>
                   </MenuBar>
-                  <TableView prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+                  <TableView fx:id="table" onMouseClicked="#updateContent" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
                     <columns>
-                      <TableColumn minWidth="80.0" prefWidth="-1.0" text="ID" />
-                      <TableColumn minWidth="80.0" prefWidth="-1.0" text="Title" />
-                        <TableColumn minWidth="80.0" prefWidth="-1.0" text="Author" />
+                      <TableColumn fx:id="columnID" minWidth="80.0" prefWidth="-1.0" text="ID" />
+                      <TableColumn fx:id="columnTitle" minWidth="80.0" prefWidth="-1.0" text="Title" />
+                        <TableColumn fx:id="columnAuthor" minWidth="80.0" prefWidth="-1.0" text="Author" />
                     </columns>
                      <columnResizePolicy>
                         <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
@@ -65,17 +65,18 @@
                      <children>
                         <ButtonBar maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="147.0">
                           <buttons>
-                              <Button mnemonicParsing="false" text="add">
+                              <Button fx:id="buttonAdd" mnemonicParsing="false" text="add">
                                  <opaqueInsets>
                                     <Insets />
                                  </opaqueInsets>
                               </Button>
-                            <Button minWidth="57.0" mnemonicParsing="false" prefHeight="25.0" text="delete" />
+                            <Button fx:id="buttonDelete" minWidth="57.0" mnemonicParsing="false" prefHeight="25.0" text="delete" />
                           </buttons>
                         </ButtonBar>
                         <ButtonBar minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" GridPane.columnIndex="1">
                           <buttons>
-                            <Button mnemonicParsing="false" text="update" />
+                            <Button fx:id="buttonUpdate" mnemonicParsing="false" text="update" />
+                              <Button fx:id="buttonSearch" mnemonicParsing="false" text="search" />
                           </buttons>
                            <GridPane.margin>
                               <Insets right="5.0" />
@@ -120,17 +121,17 @@
                         <Insets top="5.0" />
                      </padding>
                   </Label>
-                  <TextField GridPane.columnIndex="1">
+                  <TextField fx:id="textID" editable="false" GridPane.columnIndex="1">
                      <GridPane.margin>
                         <Insets left="5.0" right="5.0" />
                      </GridPane.margin>
                   </TextField>
-                  <TextField GridPane.columnIndex="1" GridPane.rowIndex="1">
+                  <TextField fx:id="textTitle" GridPane.columnIndex="1" GridPane.rowIndex="1">
                      <GridPane.margin>
                         <Insets left="5.0" right="5.0" />
                      </GridPane.margin>
                   </TextField>
-                  <TextField GridPane.columnIndex="1" GridPane.rowIndex="2">
+                  <TextField fx:id="textAuthor" GridPane.columnIndex="1" GridPane.rowIndex="2">
                      <GridPane.margin>
                         <Insets left="5.0" right="5.0" />
                      </GridPane.margin>
@@ -144,12 +145,12 @@
                       <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                     </rowConstraints>
                      <children>
-                        <TextArea prefHeight="200.0" prefWidth="200.0">
+                        <TextArea fx:id="textTags" prefHeight="200.0" prefWidth="200.0" promptText="textTags">
                            <GridPane.margin>
                               <Insets left="5.0" top="5.0" />
                            </GridPane.margin>
                         </TextArea>
-                        <Button mnemonicParsing="false" text="+" GridPane.columnIndex="1" GridPane.valignment="TOP">
+                        <Button fx:id="buttonAddTag" mnemonicParsing="false" text="+" GridPane.columnIndex="1" GridPane.valignment="TOP">
                            <GridPane.margin>
                               <Insets left="5.0" right="5.0" top="5.0" />
                            </GridPane.margin>
@@ -168,12 +169,12 @@
                       <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                     </rowConstraints>
                      <children>
-                        <TextArea prefHeight="200.0" prefWidth="200.0">
+                        <TextArea fx:id="textLocation" prefHeight="200.0" prefWidth="200.0">
                            <GridPane.margin>
                               <Insets bottom="5.0" left="5.0" top="5.0" />
                            </GridPane.margin>
                         </TextArea>
-                        <Button mnemonicParsing="false" text="+" GridPane.columnIndex="1" GridPane.valignment="TOP">
+                        <Button fx:id="buttonAddLocation" mnemonicParsing="false" text="+" GridPane.columnIndex="1" GridPane.valignment="TOP">
                            <GridPane.margin>
                               <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                            </GridPane.margin>
