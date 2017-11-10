@@ -2,10 +2,7 @@ package DatabaseUtility;
 
 import Document.Document;
 import Document.Tag;
-import Location.Archive;
-import Location.Location;
-import Location.LocationFactory;
-import Location.LocationTypes;
+import Location.*;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -22,6 +19,7 @@ public class DatabaseUtility {
     private Connection conn;
 
     public DatabaseUtility(final String path) throws SQLException, ClassNotFoundException {
+        System.out.println("gigewf");
         conn = DriverManager.getConnection(path);
     }
 
@@ -99,8 +97,28 @@ public class DatabaseUtility {
         conn.createStatement().execute(String.format("UPDATE Tag SET Name='%s' WHERE ID='%d'", TAG.getName(), TAG.getId()));
     }
 
-    public void update(final Document DOCUMENT) {
+    public void update(final Document DOCUMENT) throws SQLException {
+        Location location = DOCUMENT.getLocation();
+        int locationInt;
 
+        // update the location of document
+        if (location.getClass().equals(Archive.class)) {
+            update((Archive) location);
+            locationInt = 2;
+        } else if (location.getClass().equals(URL.class)) {
+            conn.createStatement().execute(String.format("UPDATE Document SET URL='%s' WHERE ID='%s'", location.getLocation(), DOCUMENT.getID()));
+            locationInt = 1;
+        } else if (location.getClass().equals(File.class)) {
+            conn.createStatement().execute(String.format("UPDATE Document SET FilePath='%s' WHERE ID='%s'", location.getLocation(), DOCUMENT.getID()));
+            locationInt = 0;
+        } else {
+            throw new IllegalArgumentException("Unknown Location");
+        }
+
+        // TODO handle tags
+
+        // update author and title of the document
+        conn.createStatement().execute(String.format("UPDATE Document SET Author='%s', Title='%s', LocationType='%d' WHERE ID='%s'", DOCUMENT.getAuthor(), DOCUMENT.getTitle(), locationInt, DOCUMENT.getID()));
     }
 
     public List<Document> search(final String ID, final List<Tag> tags, final String location, final String title, final String author) throws SQLException {

@@ -44,7 +44,7 @@
                       </Menu>
                     </menus>
                   </MenuBar>
-                  <TableView fx:id="table" onMouseClicked="#updateContent" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+                  <TableView fx:id="objectTable" onMouseClicked="#updateContent" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
                     <columns>
                       <TableColumn fx:id="columnID" minWidth="80.0" prefWidth="-1.0" text="ID" />
                       <TableColumn fx:id="columnTitle" minWidth="80.0" prefWidth="-1.0" text="Title" />

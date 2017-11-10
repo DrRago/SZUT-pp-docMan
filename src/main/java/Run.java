@@ -1,11 +1,10 @@
-import DatabaseUtility.DatabaseUtility;
-import Document.Document;
-import Document.Tag;
-import config.Config;
+import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
+import java.net.URL;
 
 
 /**
@@ -13,17 +12,24 @@ import java.util.List;
  * @author Pascal de Vries
  * @author Marcel Lillig
  */
-public class Run {
+public class Run extends Application {
 
+    public static void main(String args[]) throws Exception {
+        launch(args);
+    }
 
-    public static void main(String[] args) throws SQLException, ClassNotFoundException {
-        DatabaseUtility db = new DatabaseUtility(Config.databasePath);
-        List<Tag> tagList = new ArrayList<>();
-        tagList.add(new Tag(2, "Tagggggg"));
-        tagList.add(new Tag(1, "TestTag"));
-        Document doc = db.read().get(0);
-        System.out.println();
+    @Override
+    public void start(Stage primaryStage) throws Exception {
+        URL FXMLResource = getClass().getClassLoader().getResource("front.fxml");
+        assert FXMLResource != null;
+        Parent root = FXMLLoader.load(FXMLResource);
 
-        System.out.println("".isEmpty());
+        // set stage parameters
+        primaryStage.setTitle("DocMan");
+
+        primaryStage.setScene(new Scene(root));
+        primaryStage.setMinWidth(600);
+        primaryStage.setMinHeight(500);
+        primaryStage.show();
     }
 }
