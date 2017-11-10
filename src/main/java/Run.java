@@ -14,7 +14,7 @@ import java.net.URL;
  */
 public class Run extends Application {
 
-    public static void main(String args[]) throws Exception {
+    public static void main(String args[]) {
         launch(args);
     }
 
