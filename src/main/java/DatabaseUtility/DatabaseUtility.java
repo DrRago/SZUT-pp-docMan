@@ -19,7 +19,6 @@ public class DatabaseUtility {
     private Connection conn;
 
     public DatabaseUtility(final String path) throws SQLException, ClassNotFoundException {
-        System.out.println("gigewf");
         conn = DriverManager.getConnection(path);
     }
 
@@ -85,7 +84,7 @@ public class DatabaseUtility {
         return documentList;
     }
 
-    public void removeIDFromTable(final String TABLE, final int ID) throws SQLException {
+    private void removeIDFromTable(final String TABLE, final int ID) throws SQLException {
         conn.createStatement().execute(String.format("DELETE FROM %s WHERE ID='%d'", TABLE, ID));
     }
 
@@ -115,10 +114,14 @@ public class DatabaseUtility {
             throw new IllegalArgumentException("Unknown Location");
         }
 
-        // TODO handle tags
+        // tags handled by GUI
 
         // update author and title of the document
         conn.createStatement().execute(String.format("UPDATE Document SET Author='%s', Title='%s', LocationType='%d' WHERE ID='%s'", DOCUMENT.getAuthor(), DOCUMENT.getTitle(), locationInt, DOCUMENT.getID()));
+    }
+
+    public void createTag(String tag) throws SQLException {
+        conn.createStatement().execute(String.format("INSERT INTO Tag (Name) VALUES ('%s')", tag));
     }
 
     public List<Document> search(final String ID, final List<Tag> tags, final String location, final String title, final String author) throws SQLException {
