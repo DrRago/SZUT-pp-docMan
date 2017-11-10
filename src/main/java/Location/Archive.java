@@ -19,7 +19,7 @@ public class Archive implements Location {
 
     @Override
     public String toString() {
-        return this.shed + " " + this.rack + " " + this.folder;
+        return "Shed " + this.shed + "\nRack " + this.rack + "\nFolder " + this.folder;
     }
 
     public long getId() {

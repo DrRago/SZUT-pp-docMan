@@ -47,7 +47,7 @@ public class Controller {
     @FXML
     private TextArea textTags;
     @FXML
-    private TextArea textReference;
+    private TextArea textLocation;
 
     private DatabaseUtility db;
     private List<Document> documentList;
@@ -99,6 +99,15 @@ public class Controller {
     }
 
     public void updateContent(MouseEvent mouseEvent) {
-
+        String id = objectTable.getFocusModel().getFocusedItem().get("ID");
+        documentList.forEach(e -> {
+            if (e.getID().equals(id)) {
+                textID.setText(e.getID());
+                textAuthor.setText(e.getAuthor());
+                textTitle.setText(e.getTitle());
+                textTags.setText(e.getTags().toString().replaceAll("\\[|\\]", ""));
+                textLocation.setText(e.getLocation().getLocation());
+            }
+        });
     }
 }
