@@ -21,6 +21,11 @@ public class File implements Location {
     }
 
     @Override
+    public LocationTypes getLocationType() {
+        return LocationTypes.FILE;
+    }
+
+    @Override
     public String getLocation() {
         return this.toString();
     }

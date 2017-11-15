@@ -26,9 +26,15 @@ public class Tag {
         return name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     @Override
     public boolean equals(Object obj) {
-        assert obj.getClass() == Tag.class;
+        if (obj.getClass() != Tag.class) {
+            return false;
+        }
         Tag tag = (Tag) obj;
         return name.equals(tag.name);
     }

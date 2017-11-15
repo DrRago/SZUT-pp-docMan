@@ -17,6 +17,11 @@ public class URL implements Location{
     }
 
     @Override
+    public LocationTypes getLocationType() {
+        return LocationTypes.URL;
+    }
+
+    @Override
     public String getLocation() {
         return null;
     }

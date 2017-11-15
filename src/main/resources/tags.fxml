@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1">
+<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Frontend.TagsController">
   <columnConstraints>
     <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
   </columnConstraints>
@@ -16,11 +16,11 @@
     <RowConstraints maxHeight="-Infinity" minHeight="10.0" prefHeight="30.0" vgrow="NEVER" />
   </rowConstraints>
    <children>
-      <ListView fx:id="tagListview" prefHeight="200.0" prefWidth="200.0" />
+      <ListView fx:id="tagListview" editable="true" onEditCommit="#updateTags" prefHeight="200.0" prefWidth="200.0" />
       <ButtonBar prefHeight="40.0" prefWidth="200.0" GridPane.rowIndex="1">
         <buttons>
-          <Button fx:id="tagButtonAdd" mnemonicParsing="false" text="add" ButtonBar.buttonData="LEFT" />
-            <Button fx:id="tagButtonDelete" mnemonicParsing="false" text="delete" ButtonBar.buttonData="LEFT" />
+          <Button fx:id="tagButtonAdd" mnemonicParsing="false" onAction="#addTag" text="add" ButtonBar.buttonData="LEFT" />
+            <Button fx:id="tagButtonDelete" mnemonicParsing="false" onAction="#deleteTag" text="delete" ButtonBar.buttonData="LEFT" />
         </buttons>
       </ButtonBar>
    </children>

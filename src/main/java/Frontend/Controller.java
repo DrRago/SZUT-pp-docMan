@@ -7,10 +7,16 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.MapValueFactory;
-import javafx.scene.input.MouseEvent;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
+import java.io.IOException;
+import java.net.URL;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
@@ -97,19 +103,33 @@ public class Controller {
 
         // add items to the table
         objectTable.setItems(generateDataInMap());
+
+        updateContent();
     }
 
     public void updateContent() {
-        String id = objectTable.getFocusModel().getFocusedItem().get("ID");
+        Document e = getFocusedDocument();
+        textID.setText(e.getID());
+        textAuthor.setText(e.getAuthor());
+        textTitle.setText(e.getTitle());
+        textTags.setText(e.getTags().toString().replaceAll("\\[|\\]", ""));
+        textLocation.setText(e.getLocation().getLocation());
+    }
+
+    private String getFocusedDocumentID() {
+        return objectTable.getFocusModel().getFocusedItem().get("ID");
+    }
+
+    private Document getFocusedDocument() {
+        final String ID = this.getFocusedDocumentID();
+        // using final array because of lambda expression
+        final Document[] document = {null};
         documentList.forEach(e -> {
-            if (e.getID().equals(id)) {
-                textID.setText(e.getID());
-                textAuthor.setText(e.getAuthor());
-                textTitle.setText(e.getTitle());
-                textTags.setText(e.getTags().toString().replaceAll("\\[|\\]", ""));
-                textLocation.setText(e.getLocation().getLocation());
+            if (e.getID().equals(ID)) {
+                document[0] = e;
             }
         });
+        return document[0];
     }
 
     public void deleteAction(ActionEvent actionEvent) {
@@ -117,5 +137,58 @@ public class Controller {
         db.deleteDocument(id);
         updateTable();
         updateContent();
+    }
+
+    @FXML
+    private void openTagManager() throws IOException {
+        final FXMLLoader loader = new FXMLLoader();
+
+        URL FXMLResource = getClass().getClassLoader().getResource("tags.fxml");
+
+        assert FXMLResource != null;
+
+        Parent root = loader.load(FXMLResource.openStream());
+
+        //Get the Controller from the FXMLLoader
+        TagsController controller = loader.getController();
+        controller.init(getFocusedDocument(), db);
+
+        final String title = objectTable.getFocusModel().getFocusedItem().get("Title");
+
+        Stage stage = new Stage();
+        stage.setTitle(String.format("Tags of %s", title));
+        stage.setScene(new Scene(root));
+
+        // block primary window
+        stage.initModality(Modality.WINDOW_MODAL);
+        stage.initOwner(objectTable.getScene().getWindow());
+
+        stage.showAndWait();
+        updateTable();
+    }
+
+    @FXML
+    private void openReferenceManager() throws IOException {
+        final FXMLLoader loader = new FXMLLoader();
+
+        //Load the gui.fxml
+        Parent root = loader.load(getClass().getClassLoader().getResource("reference.fxml").openStream());
+
+
+        //Get the Controller from the FXMLLoader
+        ReferenceController controller = loader.getController();
+        controller.init(getFocusedDocument(), db);
+
+        final String title = objectTable.getFocusModel().getFocusedItem().get("Title");
+
+        Stage stage = new Stage();
+        stage.setTitle(String.format("Reference of %s", title));
+        stage.setScene(new Scene(root));
+
+        // block primary window
+        stage.initModality(Modality.WINDOW_MODAL);
+        stage.initOwner(objectTable.getScene().getWindow());
+
+        stage.showAndWait();
     }
 }

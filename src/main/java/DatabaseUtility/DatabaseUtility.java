@@ -4,10 +4,7 @@ import Document.Document;
 import Document.Tag;
 import Location.*;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,9 +14,16 @@ import java.util.List;
  */
 public class DatabaseUtility {
     private Connection conn;
+    private List<Tag> tags = new ArrayList<>();
 
     public DatabaseUtility(final String path) throws SQLException, ClassNotFoundException {
         conn = DriverManager.getConnection(path);
+
+        ResultSet rs = conn.createStatement().executeQuery("SELECT ID, Name FROM Tag");
+
+        while (rs.next()) {
+            tags.add(new Tag(rs.getLong("ID"), rs.getString("Name")));
+        }
     }
 
     private String[] getArchiveFromID(final int ARCHIVEID) throws SQLException {
@@ -88,7 +92,7 @@ public class DatabaseUtility {
         conn.createStatement().execute(String.format("DELETE FROM %s WHERE ID='%d'", TABLE, ID));
     }
 
-    public void deleteCodument(final String ID) {
+    public void deleteDocument(final String ID) {
         // TODO
     }
 
@@ -98,6 +102,8 @@ public class DatabaseUtility {
 
     public void update(final Tag TAG) throws SQLException {
         conn.createStatement().execute(String.format("UPDATE Tag SET Name='%s' WHERE ID='%d'", TAG.getName(), TAG.getId()));
+        tags.removeIf(e -> e.getId() == TAG.getId());
+        tags.add(TAG);
     }
 
     public void update(final Document DOCUMENT) throws SQLException {
@@ -124,8 +130,38 @@ public class DatabaseUtility {
         conn.createStatement().execute(String.format("UPDATE Document SET Author='%s', Title='%s', LocationType='%d' WHERE ID='%s'", DOCUMENT.getAuthor(), DOCUMENT.getTitle(), locationInt, DOCUMENT.getID()));
     }
 
-    public void createTag(String tag) throws SQLException {
-        conn.createStatement().execute(String.format("INSERT INTO Tag (Name) VALUES ('%s')", tag));
+    public Tag createTag(String tag, String id) throws SQLException {
+        boolean exists = false;
+        // using PreparedStatement to exclude SQL-injection and for the possibility to use unescaped characters
+        PreparedStatement stmt;
+
+        for (Tag tag1 : tags) {
+            if (tag1.getName().equals(tag)) {
+                exists = true;
+            }
+        }
+        if (!exists) {
+            stmt = conn.prepareStatement("INSERT INTO Tag (Name) VALUES (?)");
+            stmt.setString(1, tag);
+            stmt.executeUpdate();
+        }
+
+
+        stmt = conn.prepareStatement("SELECT ID FROM Tag WHERE Name=?");
+        stmt.setString(1, tag);
+        final long ID = stmt.executeQuery().getLong("ID");
+
+        // add the reference to TagReference
+        stmt = conn.prepareStatement("INSERT INTO TagReference (DocumentID, TagID) VALUES (?, ?)");
+        stmt.setString(1, id);
+        stmt.setLong(2, ID);
+        stmt.executeUpdate();
+
+        return new Tag(ID, tag);
+    }
+
+    public void removeTag(final long tagID, final String documentID) throws SQLException {
+        conn.createStatement().execute(String.format("DELETE FROM TagReference WHERE TagID='%d' AND DocumentID='%s'", tagID, documentID));
     }
 
     public List<Document> search(final String ID, final List<Tag> tags, final String location, final String title, final String author) throws SQLException {

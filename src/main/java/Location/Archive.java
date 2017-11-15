@@ -22,6 +22,11 @@ public class Archive implements Location {
         return "Shed " + this.shed + "\nRack " + this.rack + "\nFolder " + this.folder;
     }
 
+    @Override
+    public LocationTypes getLocationType() {
+        return LocationTypes.ARCHIVE;
+    }
+
     public long getId() {
         return id;
     }

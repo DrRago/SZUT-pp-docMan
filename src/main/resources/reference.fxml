@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<GridPane minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1">
+<GridPane minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Frontend.ReferenceController">
    <columnConstraints>
       <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
    </columnConstraints>
@@ -20,7 +20,7 @@
       <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
    </rowConstraints>
    <children>
-      <TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE">
+      <TabPane fx:id="tabPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE">
         <tabs>
           <Tab text="File">
                <content>
@@ -102,7 +102,7 @@
                            </GridPane.margin>
                         </Label>
                         <TextField fx:id="locationArchiveShed" GridPane.columnIndex="1" />
-                        <TextField fx:id="locationArchiveReck" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                        <TextField fx:id="locationArchiveRack" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                         <TextField fx:id="locationArchiveFolder" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                      </children>
                   </GridPane>
@@ -112,8 +112,8 @@
       </TabPane>
       <ButtonBar prefHeight="40.0" prefWidth="200.0" GridPane.rowIndex="1">
         <buttons>
-          <Button fx:id="locationCancel" mnemonicParsing="false" text="Cancel" />
-            <Button fx:id="locationOK" mnemonicParsing="false" text="OK" />
+          <Button fx:id="locationCancel" mnemonicParsing="false" onAction="#close" text="Cancel" />
+            <Button fx:id="locationOK" mnemonicParsing="false" onAction="#saveAndClose" text="OK" />
         </buttons>
       </ButtonBar>
    </children>
