@@ -2,11 +2,16 @@ package DatabaseUtility;
 
 import Document.Document;
 import Document.Tag;
-import Location.*;
+import Location.Archive;
+import Location.Location;
+import Location.LocationFactory;
+import Location.LocationTypes;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+
+import static Location.LocationTypes.FILE;
 
 /**
  * @author Leonhard Gahr
@@ -69,7 +74,7 @@ public class DatabaseUtility {
 
             switch (rs.getInt("LocationType")) {
                 case 0:
-                    location = LocationFactory.getLocation(LocationTypes.FILE, new String[]{rs.getString("FilePath")});
+                    location = LocationFactory.getLocation(FILE, new String[]{rs.getString("FilePath")});
                     break;
                 case 1:
                     location = LocationFactory.getLocation(LocationTypes.URL, new String[]{rs.getString("URL")});
@@ -92,12 +97,43 @@ public class DatabaseUtility {
         conn.createStatement().execute(String.format("DELETE FROM %s WHERE ID='%d'", TABLE, ID));
     }
 
-    public void deleteDocument(final String ID) {
-        // TODO
+    public void deleteDocument(final String ID) throws SQLException {
+        PreparedStatement stmt;
+
+        List<Document> documentList = read();
+        final Document[] toDeleteArray = new Document[1];
+        documentList.forEach(e -> {
+            if (e.getID().equals(ID)) {
+                toDeleteArray[0] = e;
+            }
+        });
+        final Document toDelete = toDeleteArray[0];
+
+        switch (toDelete.getLocation().getLocationType()) {
+            case ARCHIVE:
+                stmt = conn.prepareStatement("DELETE FROM Document WHERE ID=?");
+                stmt.setString(1, ID);
+                stmt.executeUpdate();
+
+                long archiveID;
+                stmt = conn.prepareStatement("DELETE FROM Archive WHERE ID=?");
+                archiveID = ((Archive) toDelete.getLocation().getLocationObject()).getId();
+                stmt.setLong(1, archiveID);
+                break;
+            default:
+                stmt = conn.prepareStatement("DELETE FROM Document WHERE ID=?");
+                stmt.setString(1, ID);
+                break;
+        }
+        stmt.executeUpdate();
+
+        stmt = conn.prepareStatement("DELETE FROM TagReference WHERE DocumentID=?");
+        stmt.setString(1, ID);
+        stmt.executeUpdate();
     }
 
     public void update(final Archive ARCHIVE) throws SQLException {
-        conn.createStatement().execute(String.format("UPDATE Archive SET shed='%s', rack=%s, folder=%s WHERE ID='%d'", ARCHIVE.getShed(), ARCHIVE.getRack(), ARCHIVE.getFolder(), ARCHIVE.getId()));
+        conn.createStatement().execute(String.format("UPDATE Archive SET shed='%s', rack='%s', folder='%s' WHERE ID='%d'", ARCHIVE.getShed(), ARCHIVE.getRack(), ARCHIVE.getFolder(), ARCHIVE.getId()));
     }
 
     public void update(final Tag TAG) throws SQLException {
@@ -110,27 +146,47 @@ public class DatabaseUtility {
         Location location = DOCUMENT.getLocation();
         int locationInt;
 
+        PreparedStatement stmt;
+
         // update the location of document
-        if (location.getClass().equals(Archive.class)) {
-            update((Archive) location);
-            locationInt = 2;
-        } else if (location.getClass().equals(URL.class)) {
-            conn.createStatement().execute(String.format("UPDATE Document SET URL='%s' WHERE ID='%s'", location.getLocation(), DOCUMENT.getID()));
-            locationInt = 1;
-        } else if (location.getClass().equals(File.class)) {
-            conn.createStatement().execute(String.format("UPDATE Document SET FilePath='%s' WHERE ID='%s'", location.getLocation(), DOCUMENT.getID()));
-            locationInt = 0;
-        } else {
-            throw new IllegalArgumentException("Unknown Location");
+        switch (location.getLocationType()) {
+            case ARCHIVE:
+                update((Archive) location);
+                stmt = conn.prepareStatement("UPDATE Document SET Archive=? WHERE ID=?");
+                stmt.setLong(1, ((Archive) location).getId());
+                stmt.setString(2, DOCUMENT.getID());
+                locationInt = 2;
+                break;
+            case URL:
+                stmt = conn.prepareStatement("UPDATE Document SET URL=? WHERE ID=?");
+                stmt.setString(1, location.getLocation());
+                stmt.setString(2, DOCUMENT.getID());
+                stmt.executeUpdate();
+                locationInt = 1;
+                break;
+            case FILE:
+                stmt = conn.prepareStatement("UPDATE Document SET FilePath=? WHERE ID=?");
+                stmt.setString(1, location.getLocation());
+                stmt.setString(2, DOCUMENT.getID());
+                stmt.executeUpdate();
+                locationInt = 0;
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown Location");
         }
 
         // tags handled by GUI
 
         // update author and title of the document
-        conn.createStatement().execute(String.format("UPDATE Document SET Author='%s', Title='%s', LocationType='%d' WHERE ID='%s'", DOCUMENT.getAuthor(), DOCUMENT.getTitle(), locationInt, DOCUMENT.getID()));
+        stmt = conn.prepareStatement("UPDATE Document SET Author=?, Title=?, LocationType=? WHERE ID=?");
+        stmt.setString(1, DOCUMENT.getAuthor());
+        stmt.setString(2, DOCUMENT.getTitle());
+        stmt.setInt(3, locationInt);
+        stmt.setString(4, DOCUMENT.getID());
+        stmt.executeUpdate();
     }
 
-    public Tag createTag(String tag, String id) throws SQLException {
+    public Tag createTag(final String tag, final String documentId) throws SQLException {
         boolean exists = false;
         // using PreparedStatement to exclude SQL-injection and for the possibility to use unescaped characters
         PreparedStatement stmt;
@@ -153,11 +209,36 @@ public class DatabaseUtility {
 
         // add the reference to TagReference
         stmt = conn.prepareStatement("INSERT INTO TagReference (DocumentID, TagID) VALUES (?, ?)");
-        stmt.setString(1, id);
+        stmt.setString(1, documentId);
         stmt.setLong(2, ID);
         stmt.executeUpdate();
 
         return new Tag(ID, tag);
+    }
+
+    public Archive createArchive(final String[] archiveData) throws SQLException {
+        assert archiveData.length == 3;
+
+        // Add Archive to table
+        PreparedStatement stmt = conn.prepareStatement("INSERT INTO Archive (shed, rack, folder) VALUES (?, ?, ?)");
+        stmt.setString(1, archiveData[0]);
+        stmt.setString(2, archiveData[1]);
+        stmt.setString(3, archiveData[2]);
+        stmt.executeUpdate();
+
+        String[] archiveDataWithID = new String[]{String.valueOf(getAutoIncrementValue("Archive")), archiveData[0], archiveData[1], archiveData[2]};
+
+        // Build Archive and return it
+        return (Archive) LocationFactory.getLocation(LocationTypes.ARCHIVE, archiveDataWithID);
+    }
+
+    private int getAutoIncrementValue(String table) throws SQLException {
+        PreparedStatement stmt = conn.prepareStatement("SELECT seq FROM sqlite_sequence WHERE name=?");
+        stmt.setString(1, table);
+        ResultSet rs = stmt.executeQuery();
+        rs.next();
+
+        return rs.getInt("seq");
     }
 
     public void removeTag(final long tagID, final String documentID) throws SQLException {

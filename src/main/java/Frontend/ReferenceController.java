@@ -2,14 +2,16 @@ package Frontend;
 
 import DatabaseUtility.DatabaseUtility;
 import Document.Document;
-import Location.Archive;
-import Location.File;
-import Location.Location;
-import Location.URL;
+import Location.*;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
+
+import java.sql.SQLException;
 
 
 /**
@@ -35,9 +37,16 @@ public class ReferenceController {
     @FXML
     private TextField locationUrlText;
 
+    private LocationTypes locationType;
+    private DatabaseUtility database;
+    private Document document;
+
     void init(Document document, DatabaseUtility database) {
+        this.document = document;
+        this.database = database;
         Location location = document.getLocation();
-        switch (location.getLocationType()) {
+        locationType = location.getLocationType();
+        switch (locationType) {
             case ARCHIVE:
                 setLocationArchive((Archive) location);
                 break;
@@ -48,58 +57,45 @@ public class ReferenceController {
                 setLocationURL((URL) location);
         }
 
-        final String[] textFileBefore = new String[1];
-        locationTextFile.focusedProperty().addListener((ov, t, t1) -> {
-            if (t1) {
-                textFileBefore[0] = locationTextFile.getText();
-            } else {
-                if (!textFileBefore[0].equals(locationTextFile.getText())) {
-                    clearForFileInput();
+        tabPane.addEventHandler(KeyEvent.KEY_PRESSED, (key) -> {
+            if(key.getCode()== KeyCode.ESCAPE) {
+                this.close();
+            } else if(key.getCode() == KeyCode.ENTER) {
+                try {
+                    this.saveAndClose();
+                } catch (SQLException e) {
+                    e.printStackTrace();
                 }
             }
         });
 
-        final String[] textURLBefore = new String[1];
-        locationUrlText.focusedProperty().addListener((ov, t, t1) -> {
-            if (t1) {
-                textURLBefore[0] = locationUrlText.getText();
-            } else {
-                if (!textURLBefore[0].equals(locationUrlText.getText())) {
-                    clearForUrlInput();
-                }
-            }
-        });
+        createFocusEvent(locationTextFile, LocationTypes.FILE);
 
+        createFocusEvent(locationUrlText, LocationTypes.URL);
 
-        final String[] textArchiveShedBefore = new String[1];
-        locationArchiveShed.focusedProperty().addListener((ov, t, t1) -> {
-            if (t1) {
-                textArchiveShedBefore[0] = locationArchiveShed.getText();
-            } else {
-                if (!textArchiveShedBefore[0].equals(locationArchiveShed.getText())) {
-                    clearForArchiveInput();
-                }
-            }
-        });
+        createFocusEvent(locationArchiveShed, LocationTypes.ARCHIVE);
+        createFocusEvent(locationArchiveRack, LocationTypes.ARCHIVE);
+        createFocusEvent(locationArchiveFolder, LocationTypes.ARCHIVE);
+    }
 
-        final String[] textArchiveRackBefore = new String[1];
-        locationArchiveRack.focusedProperty().addListener((ov, t, t1) -> {
+    private void createFocusEvent(TextField textField, LocationTypes type) {
+        final String[] textBefore = new String[1];
+        textField.focusedProperty().addListener((ov, t, t1) -> {
             if (t1) {
-                textArchiveRackBefore[0] = locationArchiveRack.getText();
+                textBefore[0] = textField.getText();
             } else {
-                if (!textArchiveRackBefore[0].equals(locationArchiveRack.getText())) {
-                    clearForArchiveInput();
-                }
-            }
-        });
-
-        final String[] textArchiveFolderBefore = new String[1];
-        locationArchiveFolder.focusedProperty().addListener((ov, t, t1) -> {
-            if (t1) {
-                textArchiveFolderBefore[0] = locationArchiveFolder.getText();
-            } else {
-                if (!textArchiveFolderBefore[0].equals(locationArchiveFolder.getText())) {
-                    clearForArchiveInput();
+                if (!textBefore[0].equals(textField.getText())) {
+                    switch (type) {
+                        case ARCHIVE:
+                            clearForArchiveInput();
+                            break;
+                        case URL:
+                            clearForUrlInput();
+                            break;
+                        case FILE:
+                            clearForFileInput();
+                            break;
+                    }
                 }
             }
         });
@@ -150,7 +146,31 @@ public class ReferenceController {
     }
 
     @FXML
-    private void saveAndClose() {
-        //TODO
+    private void saveAndClose() throws SQLException {
+        Location newLocation;
+
+        if (!locationUrlText.getText().isEmpty()) {
+            newLocation = LocationFactory.getLocation(LocationTypes.URL, new String[]{locationUrlText.getText()});
+        } else if (!locationTextFile.getText().isEmpty()) {
+            newLocation = LocationFactory.getLocation(LocationTypes.FILE, new String[]{locationTextFile.getText()});
+        } else if (!locationArchiveShed.getText().isEmpty() | !locationArchiveRack.getText().isEmpty() | !locationArchiveFolder.getText().isEmpty()) {
+            if (locationArchiveShed.getText().isEmpty() | locationArchiveRack.getText().isEmpty() | locationArchiveFolder.getText().isEmpty()) {
+                Alert archiveIncomplete = new Alert(Alert.AlertType.ERROR, "All information for archives is required");
+                archiveIncomplete.showAndWait();
+                return;
+            }
+            String[] archiveData = new String[3];
+            archiveData[0] = locationArchiveShed.getText();
+            archiveData[1] = locationArchiveRack.getText();
+            archiveData[2] = locationArchiveFolder.getText();
+
+            newLocation = database.createArchive(archiveData);
+        } else {
+            throw new IllegalArgumentException("Location Invalid");
+        }
+        document.setLocation(newLocation);
+        database.update(document);
+
+        this.close();
     }
 }

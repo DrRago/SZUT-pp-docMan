@@ -32,8 +32,16 @@ public class Document {
         return id;
     }
 
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
     public String getTitle() {
         return title;
+    }
+
+    public void setAuthor(String author) {
+        this.author = author;
     }
 
     public String getAuthor() {
@@ -42,6 +50,10 @@ public class Document {
 
     public Location getLocation() {
         return location;
+    }
+
+    public void setLocation(Location location) {
+        this.location = location;
     }
 
     public List<Tag> getTags() {

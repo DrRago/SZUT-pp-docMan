@@ -23,11 +23,11 @@ public class URL implements Location{
 
     @Override
     public String getLocation() {
-        return null;
+        return URL;
     }
 
     @Override
     public Object getLocationObject() {
-        return null;
+        return this;
     }
 }

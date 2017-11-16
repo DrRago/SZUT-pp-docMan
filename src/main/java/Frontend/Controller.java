@@ -58,6 +58,7 @@ public class Controller {
 
     private DatabaseUtility db;
     private List<Document> documentList;
+    private boolean createDocumentState;
 
     @FXML
     private void initialize() throws SQLException, ClassNotFoundException {
@@ -109,15 +110,29 @@ public class Controller {
 
     public void updateContent() {
         Document e = getFocusedDocument();
-        textID.setText(e.getID());
-        textAuthor.setText(e.getAuthor());
-        textTitle.setText(e.getTitle());
-        textTags.setText(e.getTags().toString().replaceAll("\\[|\\]", ""));
-        textLocation.setText(e.getLocation().getLocation());
+        if (e != null) {
+            textID.setText(e.getID());
+            textAuthor.setText(e.getAuthor());
+            textTitle.setText(e.getTitle());
+            textTags.setText(e.getTags().toString().replaceAll("\\[|\\]", ""));
+            textLocation.setText(e.getLocation().getLocation());
+        } else {
+            if (createDocumentState) {
+                textID.setEditable(true);
+            }
+            textID.clear();
+            textAuthor.clear();
+            textTitle.clear();
+            textTags.clear();
+            textLocation.clear();
+        }
     }
 
     private String getFocusedDocumentID() {
-        return objectTable.getFocusModel().getFocusedItem().get("ID");
+        if (objectTable.getFocusModel().getFocusedItem() != null) {
+            return objectTable.getFocusModel().getFocusedItem().get("ID");
+        }
+        return null;
     }
 
     private Document getFocusedDocument() {
@@ -132,11 +147,41 @@ public class Controller {
         return document[0];
     }
 
-    public void deleteAction(ActionEvent actionEvent) {
+    public void deleteAction(ActionEvent actionEvent) throws SQLException {
         String id = objectTable.getFocusModel().getFocusedItem().get("ID");
         db.deleteDocument(id);
+        documentList = db.read();
         updateTable();
+    }
+
+    @FXML
+    private void addDocumentToTable(){
+        Map<String, String> dataRow = new HashMap<>();
+
+        dataRow.put("ID", "");
+        dataRow.put("Author", "");
+        dataRow.put("Title", "");
+
+        objectTable.getItems().add(dataRow);
+        objectTable.getFocusModel().focus(objectTable.getItems().size()-1);
         updateContent();
+
+        createDocumentState = true;
+        // TODO
+    }
+
+    @FXML
+    private void updateDocument() throws SQLException {
+        Document document = getFocusedDocument();
+        if (textAuthor.getText().isEmpty() | textTitle.getText().isEmpty()) {
+            Alert emptyAlert = new Alert(Alert.AlertType.ERROR, "Please fill all required information");
+            emptyAlert.showAndWait();
+        } else {
+            document.setAuthor(textAuthor.getText());
+            document.setTitle(textTitle.getText());
+            db.update(document);
+            updateTable();
+        }
     }
 
     @FXML
@@ -190,5 +235,6 @@ public class Controller {
         stage.initOwner(objectTable.getScene().getWindow());
 
         stage.showAndWait();
+        updateTable();
     }
 }

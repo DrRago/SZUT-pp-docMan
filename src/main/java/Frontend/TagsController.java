@@ -10,6 +10,10 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.cell.TextFieldListCell;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.GridPane;
+import javafx.stage.Stage;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -20,6 +24,9 @@ import java.util.List;
  * @author Pascal de Vries
  */
 public class TagsController {
+
+    @FXML
+    private GridPane gridPane;
 
     @FXML
     private Button tagButtonDelete;
@@ -33,6 +40,14 @@ public class TagsController {
     Document document;
 
     void init(Document document, DatabaseUtility database) {
+        // Keyevents to close the window on press escape
+        // Not working in listview, because it blocks the key for edit cancel
+        gridPane.addEventHandler(KeyEvent.KEY_PRESSED, (key) -> {
+            if(key.getCode()== KeyCode.ESCAPE) {
+                close();
+            }
+        });
+
         this.database = database;
         tagList = document.getTags();
         this.document = document;
@@ -50,10 +65,18 @@ public class TagsController {
         }
     }
 
+    private void close() {
+        ((Stage) gridPane.getScene().getWindow()).close();
+    }
+
     @FXML
     private void updateTags(ListView.EditEvent<String> stringEditEvent) throws SQLException {
         String newValue = stringEditEvent.getNewValue();
         String oldValue = tagListview.getItems().get(stringEditEvent.getIndex());
+
+        if (newValue.trim().equals(oldValue.trim())) {
+            return;
+        }
 
         if (newValue.trim().equals("")) {
             tagListview.getItems().remove(stringEditEvent.getIndex());
