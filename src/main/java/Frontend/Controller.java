@@ -340,7 +340,7 @@ public class Controller {
         final int ACTIVESEARCH = 2;
         switch (currentState) {
             case IDLE:
-                buttonSearch.setText("execute search");
+                buttonSearch.setText("execute");
                 clearInformation();
                 textID.setEditable(true);
                 currentState = FILLFORMULAR;
@@ -361,5 +361,9 @@ public class Controller {
 
     private void updateTable() throws SQLException {
         updateTable(new ArrayList<>());
+    }
+
+    public void close() {
+        ((Stage)textLocation.getScene().getWindow()).close();
     }
 }
