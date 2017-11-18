@@ -1,6 +1,7 @@
 package config;
 
 /**
+ * The configuration class
  * @author Leonhard Gahr
  * @author Pascal de Vries
  */

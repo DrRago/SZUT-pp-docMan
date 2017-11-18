@@ -51,7 +51,7 @@ public class DatabaseUtility {
         return null;
     }
 
-    private List<Tag> getTaglistFromDocumentID(final String ID) throws SQLException {
+    private List<Tag> getTagListFromDocumentID(final String ID) throws SQLException {
         final List<Tag> TAGS = new ArrayList<Tag>();
 
         ResultSet tagReferenceRS = conn.createStatement().executeQuery("SELECT TagID FROM TagReference WHERE DocumentID='" + ID + "'");
@@ -95,7 +95,7 @@ public class DatabaseUtility {
                     throw new IllegalArgumentException("Location type not defined in database");
             }
 
-            final List<Tag> TAGS = getTaglistFromDocumentID(ID);
+            final List<Tag> TAGS = getTagListFromDocumentID(ID);
 
             documentList.add(new Document(ID, TITLE, AUTHOR, location, TAGS));
         }

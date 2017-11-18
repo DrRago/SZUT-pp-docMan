@@ -36,7 +36,7 @@ public class TagsController {
     @FXML
     private Button tagButtonAdd;
     @FXML
-    private ListView<String> tagListview;
+    private ListView<String> tagListView;
 
     private List<Tag> tagList;
     private DatabaseUtility database;
@@ -62,9 +62,9 @@ public class TagsController {
         });
 
         ObservableList<String> items = FXCollections.observableArrayList(stringTagList);
-        tagListview.setItems(items);
+        tagListView.setItems(items);
 
-        tagListview.setCellFactory(CheckBoxListCell.forListView((String param) -> {
+        tagListView.setCellFactory(CheckBoxListCell.forListView((String param) -> {
             BooleanProperty observable = tags.get(param);
             observable.addListener((obs, wasSelected, isNowSelected) -> {
                 tags.get(param).set(isNowSelected);
@@ -74,7 +74,7 @@ public class TagsController {
             return observable;
         }));
 
-        if (tagListview.getItems().size() == 0) {
+        if (tagListView.getItems().size() == 0) {
             tagButtonDelete.setDisable(true);
         }
     }
@@ -107,18 +107,18 @@ public class TagsController {
             tagButtonDelete.setDisable(false);
         }
         tags.put(newTag.getText(), new SimpleBooleanProperty(true));
-        tagListview.getItems().add(newTag.getText());
+        tagListView.getItems().add(newTag.getText());
         document.getTags().add(database.createTag(newTag.getText()));
         newTag.clear();
     }
 
     @FXML
     private void deleteTag() throws SQLException {
-        if (tagListview.getItems().size() == 1) {
+        if (tagListView.getItems().size() == 1) {
             tagButtonDelete.setDisable(true);
         }
 
-        int removeIndex = tagListview.getFocusModel().getFocusedIndex();
+        int removeIndex = tagListView.getFocusModel().getFocusedIndex();
 
         if (removeIndex == -1) {
             return;
@@ -127,7 +127,7 @@ public class TagsController {
         Tag removeTag = tagList.get(removeIndex);
 
         tagList.remove(removeIndex);
-        tagListview.getItems().remove(removeIndex);
+        tagListView.getItems().remove(removeIndex);
 
         database.removeTag(removeTag.getId());
     }
@@ -150,9 +150,9 @@ public class TagsController {
         });
 
         ObservableList<String> items = FXCollections.observableArrayList(stringTagList);
-        tagListview.setItems(items);
+        tagListView.setItems(items);
 
-        tagListview.setCellFactory(CheckBoxListCell.forListView((String param) -> {
+        tagListView.setCellFactory(CheckBoxListCell.forListView((String param) -> {
             BooleanProperty observable = tags.get(param);
             observable.addListener((obs, wasSelected, isNowSelected) -> {
                 if (document.getTags().contains(new Tag(tagHashMap.get(param), param))) {

@@ -20,7 +20,7 @@
         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
         <RowConstraints maxHeight="-Infinity" minHeight="10.0" prefHeight="30.0" vgrow="NEVER"/>
     </rowConstraints>
-    <ListView fx:id="tagListview" editable="true" prefHeight="200.0" prefWidth="200.0"/>
+    <ListView fx:id="tagListView" editable="true" prefHeight="200.0" prefWidth="200.0"/>
     <HBox GridPane.rowIndex="1">
         <TextField fx:id="newTag" onAction="#addTag" promptText="Enter Tagname">
             <HBox.margin>

@@ -61,20 +61,20 @@
                 <ButtonBar maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
                            minWidth="-Infinity" prefHeight="25.0" prefWidth="147.0">
                     <buttons>
-                        <Button fx:id="buttonAdd" mnemonicParsing="false" onAction="#addDocumentToTable"
+                        <Button mnemonicParsing="false" onAction="#addDocumentToTable"
                                 text="add">
                             <opaqueInsets>
                                 <Insets/>
                             </opaqueInsets>
                         </Button>
-                        <Button fx:id="buttonDelete" minWidth="57.0" mnemonicParsing="false"
+                        <Button minWidth="57.0" mnemonicParsing="false"
                                 onAction="#deleteAction" prefHeight="25.0" text="delete"/>
                     </buttons>
                 </ButtonBar>
                 <ButtonBar minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0"
                            GridPane.columnIndex="1">
                     <buttons>
-                        <Button fx:id="buttonUpdate" mnemonicParsing="false" onAction="#updateDocument"
+                        <Button mnemonicParsing="false" onAction="#updateDocument"
                                 text="update"/>
                         <Button fx:id="buttonSearch" mnemonicParsing="false" onAction="#executeSearch"
                                 text="search"/>
@@ -145,7 +145,7 @@
                         <Insets left="5.0" top="5.0"/>
                     </GridPane.margin>
                 </TextArea>
-                <Button fx:id="buttonAddTag" mnemonicParsing="false" onAction="#openTagManager" text="+"
+                <Button mnemonicParsing="false" onAction="#openTagManager" text="+"
                         GridPane.columnIndex="1" GridPane.valignment="TOP">
                     <GridPane.margin>
                         <Insets left="5.0" right="5.0" top="5.0"/>
@@ -168,7 +168,7 @@
                         <Insets bottom="5.0" left="5.0" top="5.0"/>
                     </GridPane.margin>
                 </TextArea>
-                <Button fx:id="buttonAddLocation" mnemonicParsing="false" onAction="#openReferenceManager"
+                <Button mnemonicParsing="false" onAction="#openReferenceManager"
                         text="+" GridPane.columnIndex="1" GridPane.valignment="TOP">
                     <GridPane.margin>
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
