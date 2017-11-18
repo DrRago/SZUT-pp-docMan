@@ -267,6 +267,7 @@ public class Controller {
 
         Parent root = loader.load(FXMLResource.openStream());
 
+
         Document emptyDoc = new Document("", "", "", LocationFactory.getLocation(LocationTypes.URL, new String[]{""}), new ArrayList<>());
 
         //Get the Controller from the FXMLLoader
@@ -279,6 +280,7 @@ public class Controller {
         final String title = objectTable.getFocusModel().getFocusedItem().get("Title");
 
         Stage stage = new Stage();
+        stage.setResizable(false);
         stage.setTitle(String.format("Tags of %s", title));
         stage.setScene(new Scene(root));
 
@@ -316,6 +318,7 @@ public class Controller {
         final String title = objectTable.getFocusModel().getFocusedItem().get("Title");
 
         Stage stage = new Stage();
+        stage.setResizable(false);
         stage.setTitle(String.format("Reference of %s", title));
         stage.setScene(new Scene(root));
 
