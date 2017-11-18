@@ -5,7 +5,7 @@ package Location;
  * @author Pascal de Vries
  */
 public class URL implements Location{
-    private String URL;
+    private final String URL;
 
     public URL(final String URL) {
         this.URL = URL;

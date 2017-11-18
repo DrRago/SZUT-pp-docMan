@@ -10,11 +10,11 @@ import java.util.List;
  * @author Marcel Lillig
  */
 public class Document {
-    private String id;
+    private final String id;
     private String title;
     private String author;
     private Location location;
-    private List<Tag> tags;
+    private final List<Tag> tags;
 
     public Document(final String ID, final String TITLE, final String AUTHOR, final Location LOCATION, final List<Tag> TAGS) {
         this.id = ID;
@@ -22,10 +22,6 @@ public class Document {
         this.author = AUTHOR;
         this.location = LOCATION;
         this.tags = TAGS;
-    }
-
-    public void validateRefecences() {
-        // TODO: 01/09/2017 add things here
     }
 
     public String getID() {

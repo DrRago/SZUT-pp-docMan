@@ -5,7 +5,7 @@ package Document;
  * @author Marcel Lillig
  */
 public class Tag {
-    private long id;
+    private final long id;
     private String name;
 
     public Tag(final long ID, final String NAME) {

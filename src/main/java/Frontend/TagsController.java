@@ -3,21 +3,23 @@ package Frontend;
 import DatabaseUtility.DatabaseUtility;
 import Document.Document;
 import Document.Tag;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
-import javafx.scene.control.cell.TextFieldListCell;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
+import javafx.scene.control.TextField;
+import javafx.scene.control.cell.CheckBoxListCell;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Leonhard Gahr
@@ -25,6 +27,8 @@ import java.util.List;
  */
 public class TagsController {
 
+    @FXML
+    private TextField newTag;
     @FXML
     private GridPane gridPane;
 
@@ -35,89 +39,78 @@ public class TagsController {
     @FXML
     private ListView<String> tagListview;
 
-    List<Tag> tagList;
-    DatabaseUtility database;
-    Document document;
+    private List<Tag> tagList;
+    private DatabaseUtility database;
+    private Document document;
+    private final Map<String, SimpleBooleanProperty> tags = new HashMap<>();
+
+    private boolean selectOnly = false;
 
     void init(Document document, DatabaseUtility database) {
-        // Keyevents to close the window on press escape
-        // Not working in listview, because it blocks the key for edit cancel
-        gridPane.addEventHandler(KeyEvent.KEY_PRESSED, (key) -> {
-            if(key.getCode()== KeyCode.ESCAPE) {
-                close();
-            }
-        });
-
         this.database = database;
-        tagList = document.getTags();
+        tagList = database.getTags();
         this.document = document;
 
+        Map<String, Long> tagHashMap = new HashMap<>();
+
         List<String> stringTagList = new ArrayList<>(tagList.size());
-        tagList.forEach(e -> stringTagList.add(e.toString()));
+
+        tagList.forEach(e -> {
+            tags.put(e.getName(), new SimpleBooleanProperty(document.getTags().contains(e)));
+            tagHashMap.put(e.getName(), e.getId());
+            stringTagList.add(e.toString());
+
+        });
 
         ObservableList<String> items = FXCollections.observableArrayList(stringTagList);
         tagListview.setItems(items);
 
-        tagListview.setCellFactory(TextFieldListCell.forListView());
+        tagListview.setCellFactory(CheckBoxListCell.forListView((String param) -> {
+            BooleanProperty observable = tags.get(param);
+            observable.addListener((obs, wasSelected, isNowSelected) -> {
+                tags.get(param).set(isNowSelected);
+                if (wasSelected) document.getTags().remove(new Tag(tagHashMap.get(param), param));
+                if (isNowSelected) document.getTags().add(new Tag(tagHashMap.get(param), param));
+            });
+            return observable;
+        }));
 
         if (tagListview.getItems().size() == 0) {
             tagButtonDelete.setDisable(true);
         }
     }
 
-    private void close() {
+    @FXML
+    private void saveAndClose() {
+        if (!selectOnly) {
+            tagList.forEach(tag -> {
+                try {
+                    if (document.getTags().contains(tag)) {
+                        database.createTagReference(tag.getId(), document.getID());
+                    } else {
+                        database.deleteTagReference(tag.getId(), document.getID());
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            });
+        }
+
         ((Stage) gridPane.getScene().getWindow()).close();
     }
 
     @FXML
-    private void updateTags(ListView.EditEvent<String> stringEditEvent) throws SQLException {
-        String newValue = stringEditEvent.getNewValue();
-        String oldValue = tagListview.getItems().get(stringEditEvent.getIndex());
-
-        if (newValue.trim().equals(oldValue.trim())) {
+    private void addTag() throws SQLException {
+        if (newTag.getText().isEmpty()) {
             return;
         }
-
-        if (newValue.trim().equals("")) {
-            tagListview.getItems().remove(stringEditEvent.getIndex());
-            return;
-        }
-
-        if (tagListview.getItems().contains(newValue)) {
-            Alert alert = new Alert(Alert.AlertType.ERROR, "That tag already exists in this list!");
-            alert.showAndWait();
-            return;
-        }
-
-        if (tagList.size() == 0) {
-            tagList.add(database.createTag(newValue, document.getID()));
-        } else {
-            Tag toAdd = null;
-
-            for (Tag e : tagList) {
-                if (e.getName().equals(oldValue)) {
-                    e.setName(newValue);
-
-                    database.update(e);
-                } else if (tagList.indexOf(e) == tagList.size() - 1) {
-                    toAdd = database.createTag(newValue, document.getID());
-                }
-            }
-            if (toAdd != null) {
-                tagList.add(toAdd);
-            }
-        }
-        tagListview.getItems().set(stringEditEvent.getIndex(), newValue);
-    }
-
-    @FXML
-    private void addTag() {
-        // TODO No edit if it's the very first element in listview
         if (tagButtonDelete.isDisabled()) {
             tagButtonDelete.setDisable(false);
         }
-        tagListview.getItems().add("");
-        tagListview.edit(tagListview.getItems().size() - 1);
+        tags.put(newTag.getText(), new SimpleBooleanProperty(true));
+        tagListview.getItems().add(newTag.getText());
+        document.getTags().add(database.createTag(newTag.getText()));
+        newTag.clear();
     }
 
     @FXML
@@ -137,6 +130,45 @@ public class TagsController {
         tagList.remove(removeIndex);
         tagListview.getItems().remove(removeIndex);
 
-        database.removeTag(removeTag.getId(), document.getID());
+        database.removeTag(removeTag.getId());
+    }
+
+    public void initForSelectionOnly(Document emptyDoc, DatabaseUtility database) {
+        this.document = emptyDoc;
+        selectOnly = true;
+
+        tagList = database.getTags();
+
+        Map<String, Long> tagHashMap = new HashMap<>();
+
+        List<String> stringTagList = new ArrayList<>(tagList.size());
+
+        tagList.forEach(e -> {
+            tags.put(e.getName(), new SimpleBooleanProperty(document.getTags().contains(e)));
+            tagHashMap.put(e.getName(), e.getId());
+            stringTagList.add(e.toString());
+
+        });
+
+        ObservableList<String> items = FXCollections.observableArrayList(stringTagList);
+        tagListview.setItems(items);
+
+        tagListview.setCellFactory(CheckBoxListCell.forListView((String param) -> {
+            BooleanProperty observable = tags.get(param);
+            observable.addListener((obs, wasSelected, isNowSelected) -> {
+                if (document.getTags().contains(new Tag(tagHashMap.get(param), param))) {
+                    if (wasSelected) {
+                        document.getTags().removeIf(e -> e.getName().trim().equals(param.trim()));
+                    }
+                    return;
+                }
+                tags.get(param).set(isNowSelected);
+                document.getTags().add(new Tag(tagHashMap.get(param), param));
+            });
+            return observable;
+        }));
+
+        tagButtonDelete.setDisable(true);
+        tagButtonAdd.setDisable(true);
     }
 }

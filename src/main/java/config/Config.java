@@ -5,5 +5,5 @@ package config;
  * @author Pascal de Vries
  */
 public class Config {
-    public static String databasePath = "jdbc:sqlite:src\\main\\resources\\testdb.db3";
+    public static final String databasePath = "jdbc:sqlite:src\\main\\resources\\testdb.db3";
 }

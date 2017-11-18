@@ -5,10 +5,10 @@ package Location;
  * @author Marcel Lillig
  */
 public class Archive implements Location {
-    private long id;
-    private String shed;
-    private String rack;
-    private String folder;
+    private final long id;
+    private final String shed;
+    private final String rack;
+    private final String folder;
 
     public Archive(final long ID, final String SHED, final String RACK, final String FOLDER) {
         this.id = ID;

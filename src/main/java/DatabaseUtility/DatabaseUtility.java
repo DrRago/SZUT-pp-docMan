@@ -19,11 +19,16 @@ import static Location.LocationTypes.FILE;
  */
 public class DatabaseUtility {
     private Connection conn;
-    private List<Tag> tags = new ArrayList<>();
+    private final List<Tag> tags = new ArrayList<>();
 
-    public DatabaseUtility(final String path) throws SQLException, ClassNotFoundException {
+    public DatabaseUtility(final String path) throws SQLException {
         conn = DriverManager.getConnection(path);
 
+        updateTagList();
+    }
+
+    private void updateTagList() throws SQLException {
+        tags.clear();
         ResultSet rs = conn.createStatement().executeQuery("SELECT ID, Name FROM Tag");
 
         while (rs.next()) {
@@ -55,7 +60,11 @@ public class DatabaseUtility {
             ResultSet tagRS = conn.createStatement().executeQuery("SELECT * FROM Tag WHERE ID='" + tagReferenceRS.getInt("TagID") + "'");
 
             tagRS.next();
-            TAGS.add(new Tag(tagRS.getInt("ID"), tagRS.getString("Name")));
+            try {
+                TAGS.add(new Tag(tagRS.getInt("ID"), tagRS.getString("Name")));
+            } catch (SQLException e) {
+                // no tag exists -> nothing to do here
+            }
         }
 
         return TAGS;
@@ -132,7 +141,7 @@ public class DatabaseUtility {
         stmt.executeUpdate();
     }
 
-    public void update(final Archive ARCHIVE) throws SQLException {
+    private void update(final Archive ARCHIVE) throws SQLException {
         conn.createStatement().execute(String.format("UPDATE Archive SET shed='%s', rack='%s', folder='%s' WHERE ID='%d'", ARCHIVE.getShed(), ARCHIVE.getRack(), ARCHIVE.getFolder(), ARCHIVE.getId()));
     }
 
@@ -186,7 +195,7 @@ public class DatabaseUtility {
         stmt.executeUpdate();
     }
 
-    public Tag createTag(final String tag, final String documentId) throws SQLException {
+    public Tag createTag(final String tag) throws SQLException {
         boolean exists = false;
         // using PreparedStatement to exclude SQL-injection and for the possibility to use unescaped characters
         PreparedStatement stmt;
@@ -202,18 +211,27 @@ public class DatabaseUtility {
             stmt.executeUpdate();
         }
 
-
         stmt = conn.prepareStatement("SELECT ID FROM Tag WHERE Name=?");
         stmt.setString(1, tag);
         final long ID = stmt.executeQuery().getLong("ID");
 
-        // add the reference to TagReference
-        stmt = conn.prepareStatement("INSERT INTO TagReference (DocumentID, TagID) VALUES (?, ?)");
-        stmt.setString(1, documentId);
-        stmt.setLong(2, ID);
-        stmt.executeUpdate();
+        updateTagList();
 
         return new Tag(ID, tag);
+    }
+
+    public void createTagReference(final long TAGID, final String DOCUMENTID) throws SQLException {
+        PreparedStatement stmt = conn.prepareStatement("SELECT * FROM TagReference WHERE TagID=? AND DocumentID=?");
+        stmt.setLong(1, TAGID);
+        stmt.setString(2, DOCUMENTID);
+
+        ResultSet rs = stmt.executeQuery();
+        if (!rs.next()) {
+            stmt = conn.prepareStatement("INSERT INTO TagReference (DocumentID, TagID) VALUES (?, ?)");
+            stmt.setString(1, DOCUMENTID);
+            stmt.setLong(2, TAGID);
+            stmt.executeUpdate();
+        }
     }
 
     public Archive createArchive(final String[] archiveData) throws SQLException {
@@ -241,8 +259,18 @@ public class DatabaseUtility {
         return rs.getInt("seq");
     }
 
-    public void removeTag(final long tagID, final String documentID) throws SQLException {
+    public void removeTagFromDocument(final long tagID, final String documentID) throws SQLException {
         conn.createStatement().execute(String.format("DELETE FROM TagReference WHERE TagID='%d' AND DocumentID='%s'", tagID, documentID));
+    }
+
+    public void removeTag(final long tagID) throws SQLException {
+        PreparedStatement stmt = conn.prepareStatement("DELETE FROM TAG WHERE ID=?");
+        stmt.setLong(1, tagID);
+        stmt.executeUpdate();
+
+        stmt = conn.prepareStatement("DELETE FROM TagReference WHERE TagID=?");
+        stmt.setLong(1, tagID);
+        stmt.executeUpdate();
     }
 
     public List<Document> search(final String ID, final List<Tag> tags, final String location, final String title, final String author) throws SQLException {
@@ -272,5 +300,24 @@ public class DatabaseUtility {
         }
 
         return documents;
+    }
+
+    public void createDocument(String documentID, String documentTitle, String documentAuthor) throws SQLException {
+        PreparedStatement stmt = conn.prepareStatement("INSERT INTO Document (ID, Title, Author) VALUES (?, ?, ?)");
+        stmt.setString(1, documentID);
+        stmt.setString(2, documentTitle);
+        stmt.setString(3, documentAuthor);
+        stmt.executeUpdate();
+    }
+
+    public List<Tag> getTags() {
+        return tags;
+    }
+
+    public void deleteTagReference(long id, String id1) throws SQLException {
+        PreparedStatement stmt = conn.prepareStatement("DELETE FROM TagReference WHERE DocumentID=? AND TagID=?");
+        stmt.setString(1, id1);
+        stmt.setLong(2, id);
+        stmt.executeUpdate();
     }
 }
