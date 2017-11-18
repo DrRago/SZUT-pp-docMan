@@ -178,7 +178,7 @@ public class DatabaseUtility {
             case ARCHIVE:
                 update((Archive) location);
                 stmt = conn.prepareStatement("UPDATE Document SET Archive=? WHERE ID=?");
-                stmt.setLong(1, ((Archive) location).getId());
+                stmt.setInt(1, ((int) ((Archive) location).getId()));
                 stmt.setString(2, DOCUMENT.getID());
                 locationInt = 2;
                 break;
@@ -186,19 +186,20 @@ public class DatabaseUtility {
                 stmt = conn.prepareStatement("UPDATE Document SET URL=? WHERE ID=?");
                 stmt.setString(1, location.getLocation());
                 stmt.setString(2, DOCUMENT.getID());
-                stmt.executeUpdate();
                 locationInt = 1;
                 break;
             case FILE:
                 stmt = conn.prepareStatement("UPDATE Document SET FilePath=? WHERE ID=?");
                 stmt.setString(1, location.getLocation());
                 stmt.setString(2, DOCUMENT.getID());
-                stmt.executeUpdate();
                 locationInt = 0;
                 break;
             default:
                 throw new IllegalArgumentException("Unknown Location");
         }
+
+        stmt.executeUpdate();
+
 
         // tags handled by GUI
 

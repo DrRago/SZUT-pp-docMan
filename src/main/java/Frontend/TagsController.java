@@ -116,7 +116,9 @@ public class TagsController {
         }
         tags.put(newTag.getText(), new SimpleBooleanProperty(true));
         tagListView.getItems().add(newTag.getText());
-        document.getTags().add(database.createTag(newTag.getText()));
+        Tag tag = database.createTag(newTag.getText());
+        tagList.add(tag);
+        document.getTags().add(tag);
         newTag.clear();
     }
 
