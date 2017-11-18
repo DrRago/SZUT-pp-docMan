@@ -70,6 +70,12 @@ public class ReferenceController {
         createFocusEvent(locationArchiveFolder, LocationTypes.ARCHIVE);
     }
 
+    /**
+     * Create focus change events and check if the value has changed on focus out
+     *
+     * @param textField the textfield
+     * @param type      the type of the input reference
+     */
     private void createFocusEvent(TextField textField, LocationTypes type) {
         final String[] textBefore = new String[]{""};
         textField.focusedProperty().addListener((ov, t, t1) -> {
@@ -93,11 +99,17 @@ public class ReferenceController {
         });
     }
 
+    /**
+     * clear textFields except of the necessary ones for the archive
+     */
     private void clearForArchiveInput() {
         locationTextFile.clear();
         locationUrlText.clear();
     }
 
+    /**
+     * clear textFields except of the necessary ones for the file
+     */
     private void clearForFileInput() {
         locationUrlText.clear();
         locationArchiveFolder.clear();
@@ -105,6 +117,9 @@ public class ReferenceController {
         locationArchiveShed.clear();
     }
 
+    /**
+     * clear textFields except of the necessary ones for the url
+     */
     private void clearForUrlInput() {
         locationTextFile.clear();
         locationArchiveFolder.clear();
@@ -112,6 +127,11 @@ public class ReferenceController {
         locationArchiveShed.clear();
     }
 
+    /**
+     * Set the initial view for to the archive tab
+     *
+     * @param archive the archive to show
+     */
     private void setLocationArchive(Archive archive) {
         locationArchiveShed.setText(archive.getShed());
         locationArchiveRack.setText(archive.getRack());
@@ -120,23 +140,41 @@ public class ReferenceController {
         tabPane.getSelectionModel().select(2);
     }
 
+    /**
+     * Set the initial view to the file tab
+     *
+     * @param file the file to show
+     */
     private void setLocationFile(File file) {
         locationTextFile.setText(file.getLocation());
 
         tabPane.getSelectionModel().select(0);
     }
 
+    /**
+     * Set the initial view to the url tab
+     *
+     * @param url the url to show
+     */
     private void setLocationURL(URL url) {
         locationUrlText.setText(url.toString());
 
         tabPane.getSelectionModel().select(1);
     }
 
+    /**
+     * close the window
+     */
     @FXML
     private void close() {
         ((Stage) tabPane.getScene().getWindow()).close();
     }
 
+    /**
+     * save the changed reference and close the window
+     *
+     * @throws SQLException
+     */
     @FXML
     private void saveAndClose() throws SQLException {
         Location newLocation;
@@ -171,7 +209,7 @@ public class ReferenceController {
     }
 
     /**
-     * Open action.
+     * Open a file open dialog
      */
     public void openAction() {
         FileChooser chooser = new FileChooser();
@@ -184,6 +222,9 @@ public class ReferenceController {
         }
     }
 
+    /**
+     * Set the initial view tab for the user to the location type of the document
+     */
     private void setInitialLocation() {
         Location location = document.getLocation();
         locationType = location.getLocationType();
@@ -199,6 +240,9 @@ public class ReferenceController {
         }
     }
 
+    /**
+     * add the key listener to exit the program on escape press
+     */
     private void addKeyEventListener() {
         tabPane.addEventHandler(KeyEvent.KEY_PRESSED, (key) -> {
             if (key.getCode() == KeyCode.ESCAPE) {
@@ -216,7 +260,7 @@ public class ReferenceController {
     /**
      * Init for selection only.
      *
-     * @param emptyDoc the empty doc
+     * @param emptyDoc the empty document
      */
     void initForSelectionOnly(Document emptyDoc) {
         selectOnly = true;

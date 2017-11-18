@@ -35,6 +35,11 @@ public class DatabaseUtility {
         updateTagList();
     }
 
+    /**
+     * update the tag list of the databaseUtility
+     *
+     * @throws SQLException
+     */
     private void updateTagList() throws SQLException {
         tags.clear();
         ResultSet rs = conn.createStatement().executeQuery("SELECT ID, Name FROM Tag");
@@ -44,6 +49,13 @@ public class DatabaseUtility {
         }
     }
 
+    /**
+     * Get an archive by ID
+     *
+     * @param ARCHIVEID the archive id
+     * @return a String array with all information for the initialization of the archve object
+     * @throws SQLException
+     */
     private String[] getArchiveFromID(final int ARCHIVEID) throws SQLException {
         if (ARCHIVEID != 0) {
             ResultSet archiveRS = conn.createStatement().executeQuery("SELECT * FROM Archive WHERE ID='" + ARCHIVEID + "'");
@@ -59,6 +71,13 @@ public class DatabaseUtility {
         return null;
     }
 
+    /**
+     * Get all tags of a document by it's id form the database
+     *
+     * @param ID the document if
+     * @return the tag list
+     * @throws SQLException
+     */
     private List<Tag> getTagListFromDocumentID(final String ID) throws SQLException {
         final List<Tag> TAGS = new ArrayList<Tag>();
 
@@ -79,7 +98,7 @@ public class DatabaseUtility {
     }
 
     /**
-     * Read list.
+     * Read all documents to a list
      *
      * @return the list
      * @throws SQLException the sql exception
@@ -162,7 +181,7 @@ public class DatabaseUtility {
     }
 
     /**
-     * Update.
+     * Update a document
      *
      * @param DOCUMENT the document
      * @throws SQLException the sql exception
@@ -213,10 +232,10 @@ public class DatabaseUtility {
     }
 
     /**
-     * Create tag tag.
+     * Create a tag in the database and returnsit
      *
-     * @param tag the tag
-     * @return the tag
+     * @param tag the tag to create
+     * @return the tag that has been created
      * @throws SQLException the sql exception
      */
     public Tag createTag(final String tag) throws SQLException {
@@ -245,7 +264,7 @@ public class DatabaseUtility {
     }
 
     /**
-     * Create tag reference.
+     * Create a tag reference to a document
      *
      * @param TAGID      the tagid
      * @param DOCUMENTID the documentid
@@ -266,7 +285,7 @@ public class DatabaseUtility {
     }
 
     /**
-     * Create archive archive.
+     * Create an archive in the databse and return it
      *
      * @param archiveData the archive data
      * @return the archive
@@ -298,7 +317,7 @@ public class DatabaseUtility {
     }
 
     /**
-     * Remove tag.
+     * Remove a tag form the database
      *
      * @param tagID the tag id
      * @throws SQLException the sql exception
@@ -314,7 +333,7 @@ public class DatabaseUtility {
     }
 
     /**
-     * Search list.
+     * Search the documents with the given values
      *
      * @param ID       the id
      * @param tags     the tags
@@ -354,7 +373,7 @@ public class DatabaseUtility {
     }
 
     /**
-     * Create document.
+     * Create a document in the database
      *
      * @param documentID     the document id
      * @param documentTitle  the document title
@@ -370,7 +389,7 @@ public class DatabaseUtility {
     }
 
     /**
-     * Gets tags.
+     * Getter for the complete tagList
      *
      * @return the tags
      */
@@ -379,16 +398,16 @@ public class DatabaseUtility {
     }
 
     /**
-     * Delete tag reference.
+     * Delete tag reference from the database
      *
-     * @param id  the id
-     * @param id1 the id 1
+     * @param tagId  the tag id
+     * @param documentID the document id
      * @throws SQLException the sql exception
      */
-    public void deleteTagReference(long id, String id1) throws SQLException {
+    public void deleteTagReference(long tagId, String documentID) throws SQLException {
         PreparedStatement stmt = conn.prepareStatement("DELETE FROM TagReference WHERE DocumentID=? AND TagID=?");
-        stmt.setString(1, id1);
-        stmt.setLong(2, id);
+        stmt.setString(1, documentID);
+        stmt.setLong(2, tagId);
         stmt.executeUpdate();
     }
 }

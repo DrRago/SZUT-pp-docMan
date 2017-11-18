@@ -87,6 +87,9 @@ public class TagsController {
         }
     }
 
+    /**
+     * Save the changes to the database and close the program
+     */
     @FXML
     private void saveAndClose() {
         if (!selectOnly) {
@@ -106,6 +109,11 @@ public class TagsController {
         ((Stage) gridPane.getScene().getWindow()).close();
     }
 
+    /**
+     * Add a tag to the database
+     *
+     * @throws SQLException
+     */
     @FXML
     private void addTag() throws SQLException {
         if (newTag.getText().isEmpty()) {
@@ -122,6 +130,11 @@ public class TagsController {
         newTag.clear();
     }
 
+    /**
+     * Delete a tag from the database
+     *
+     * @throws SQLException
+     */
     @FXML
     private void deleteTag() throws SQLException {
         if (tagListView.getItems().size() == 1) {

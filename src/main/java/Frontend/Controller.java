@@ -68,6 +68,7 @@ public class Controller {
     private int currentState = IDLE;
 
 
+    // the javafx initialization method
     @FXML
     private void initialize() throws SQLException, ClassNotFoundException {
         db = new DatabaseUtility(Config.databasePath);
@@ -82,6 +83,12 @@ public class Controller {
 
     }
 
+    /**
+     * create the focus events for the textFields if we create a new document
+     *
+     * @param textField  the textfield
+     * @param saveString the string array to store the textField text in
+     */
     private void createFocusEvent(TextField textField, final String[] saveString) {
         textField.focusedProperty().addListener((ov, t, t1) -> {
             if (!t1 & createDocumentState & !textField.getText().isEmpty()) {
@@ -138,6 +145,8 @@ public class Controller {
 
     /**
      * Update the attribute table
+     *
+     * @param documents if given, the table is updated with these documents
      */
     private void updateTable(List<Document> documents) throws SQLException {
         if (documents.isEmpty()) {
@@ -161,6 +170,9 @@ public class Controller {
         updateContent();
     }
 
+    /**
+     * Update the content of the textFields
+     */
     private void updateContent() {
         if (currentState == FILLFORMULAR) return;
         if (!createDocumentState) {
@@ -183,6 +195,9 @@ public class Controller {
         }
     }
 
+    /**
+     * clear the textFields
+     */
     private void clearInformation() {
         textID.clear();
         textAuthor.clear();
@@ -191,6 +206,11 @@ public class Controller {
         textLocation.clear();
     }
 
+    /**
+     * get the focused document ID in the table
+     *
+     * @return the ID
+     */
     private String getFocusedDocumentID() {
         if (objectTable.getFocusModel().getFocusedItem() != null) {
             return objectTable.getFocusModel().getFocusedItem().get("ID");
@@ -198,6 +218,11 @@ public class Controller {
         return null;
     }
 
+    /**
+     * Get the focused document in the table
+     *
+     * @return the document
+     */
     private Document getFocusedDocument() {
         final String ID = this.getFocusedDocumentID();
         // using final array because of lambda expression
@@ -225,6 +250,9 @@ public class Controller {
         updateContent();
     }
 
+    /**
+     * start the add document process and ad a empty document to the table
+     */
     @FXML
     private void addDocumentToTable() {
         Map<String, String> dataRow = new HashMap<>();
@@ -240,9 +268,13 @@ public class Controller {
 
         clearInformation();
         textID.setEditable(true);
-        // TODO
     }
 
+    /**
+     * Update a document in the table
+     *
+     * @throws SQLException
+     */
     @FXML
     private void updateDocument() throws SQLException {
         Document document = getFocusedDocument();
@@ -257,6 +289,12 @@ public class Controller {
         }
     }
 
+    /**
+     * Open the tag manager for the selected document
+     *
+     * @throws IOException
+     * @throws SQLException
+     */
     @FXML
     private void openTagManager() throws IOException, SQLException {
         final FXMLLoader loader = new FXMLLoader();
@@ -296,6 +334,12 @@ public class Controller {
         updateTable();
     }
 
+    /**
+     * Open the reference manager for the selected document
+     *
+     * @throws IOException
+     * @throws SQLException
+     */
     @FXML
     private void openReferenceManager() throws IOException, SQLException {
         final FXMLLoader loader = new FXMLLoader();
@@ -366,7 +410,10 @@ public class Controller {
         updateTable(new ArrayList<>());
     }
 
+    /**
+     * Close the program
+     */
     public void close() {
-        ((Stage)textLocation.getScene().getWindow()).close();
+        ((Stage) textLocation.getScene().getWindow()).close();
     }
 }
