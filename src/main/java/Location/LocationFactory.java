@@ -1,13 +1,16 @@
 package Location;
 
 /**
+ * The type Location factory.
+ *
  * @author Leonhard Gahr
  * @author Pascal de Vries
  */
 public class LocationFactory {
     /**
+     * Gets location.
      *
-     * @param type The type of the location to be created
+     * @param type      The type of the location to be created
      * @param arguments the arguments depending on the type that's chosen
      * @return a object of the type location
      */

@@ -16,6 +16,8 @@ import java.sql.SQLException;
 
 
 /**
+ * The type Reference controller.
+ *
  * @author Leonhard Gahr
  * @author Pascal de Vries
  */
@@ -44,6 +46,12 @@ public class ReferenceController {
 
     private boolean selectOnly = false;
 
+    /**
+     * Init.
+     *
+     * @param document the document
+     * @param database the database
+     */
     void init(Document document, DatabaseUtility database) {
         this.document = document;
         this.database = database;
@@ -162,6 +170,9 @@ public class ReferenceController {
         this.close();
     }
 
+    /**
+     * Open action.
+     */
     public void openAction() {
         FileChooser chooser = new FileChooser();
         chooser.setTitle("Open XML File");
@@ -202,6 +213,11 @@ public class ReferenceController {
         });
     }
 
+    /**
+     * Init for selection only.
+     *
+     * @param emptyDoc the empty doc
+     */
     void initForSelectionOnly(Document emptyDoc) {
         selectOnly = true;
 

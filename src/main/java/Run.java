@@ -8,12 +8,19 @@ import java.net.URL;
 
 
 /**
+ * The type Run.
+ *
  * @author Leonhard Gahr
  * @author Pascal de Vries
  * @author Marcel Lillig
  */
 public class Run extends Application {
 
+    /**
+     * Main.
+     *
+     * @param args the args
+     */
     public static void main(String args[]) {
         launch(args);
     }

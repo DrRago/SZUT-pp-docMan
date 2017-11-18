@@ -1,6 +1,8 @@
 package Document;
 
 /**
+ * The type Tag.
+ *
  * @author Leonhard Gahr
  * @author Marcel Lillig
  */
@@ -10,7 +12,8 @@ public class Tag {
 
     /**
      * Construct the tag
-     * @param ID the id of the tag in the database
+     *
+     * @param ID   the id of the tag in the database
      * @param NAME the name of the tag
      */
     public Tag(final long ID, final String NAME) {
@@ -29,6 +32,7 @@ public class Tag {
 
     /**
      * Getter for the ID
+     *
      * @return the IF
      */
     public long getId() {
@@ -37,16 +41,13 @@ public class Tag {
 
     /**
      * Getter for the name
+     *
      * @return the name
      */
     public String getName() {
         return name;
     }
 
-    /**
-     * equals override to filter tags in the filter search of the database
-     * @return a boolean if the names are matching
-     */
     @Override
     public boolean equals(Object obj) {
         if (obj.getClass() != Tag.class) {

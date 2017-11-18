@@ -22,6 +22,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * The type Tags controller.
+ *
  * @author Leonhard Gahr
  * @author Pascal de Vries
  */
@@ -45,6 +47,12 @@ public class TagsController {
 
     private boolean selectOnly = false;
 
+    /**
+     * Init.
+     *
+     * @param document the document
+     * @param database the database
+     */
     void init(Document document, DatabaseUtility database) {
         this.database = database;
         tagList = database.getTags();
@@ -132,6 +140,12 @@ public class TagsController {
         database.removeTag(removeTag.getId());
     }
 
+    /**
+     * Init for selection only.
+     *
+     * @param emptyDoc the empty doc
+     * @param database the database
+     */
     void initForSelectionOnly(Document emptyDoc, DatabaseUtility database) {
         this.document = emptyDoc;
         selectOnly = true;

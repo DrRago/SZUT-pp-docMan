@@ -14,6 +14,8 @@ import java.util.List;
 import static Location.LocationTypes.FILE;
 
 /**
+ * The type Database utility.
+ *
  * @author Leonhard Gahr
  * @author Pascal de Vries
  */
@@ -21,6 +23,12 @@ public class DatabaseUtility {
     private Connection conn;
     private final List<Tag> tags = new ArrayList<>();
 
+    /**
+     * Instantiates a new Database utility.
+     *
+     * @param path the path
+     * @throws SQLException the sql exception
+     */
     public DatabaseUtility(final String path) throws SQLException {
         conn = DriverManager.getConnection(path);
 
@@ -70,6 +78,12 @@ public class DatabaseUtility {
         return TAGS;
     }
 
+    /**
+     * Read list.
+     *
+     * @return the list
+     * @throws SQLException the sql exception
+     */
     public List<Document> read() throws SQLException {
         ResultSet rs = conn.createStatement().executeQuery("SELECT * FROM Document");
 
@@ -102,6 +116,12 @@ public class DatabaseUtility {
         return documentList;
     }
 
+    /**
+     * Delete document.
+     *
+     * @param ID the id
+     * @throws SQLException the sql exception
+     */
     public void deleteDocument(final String ID) throws SQLException {
         PreparedStatement stmt;
 
@@ -141,6 +161,12 @@ public class DatabaseUtility {
         conn.createStatement().execute(String.format("UPDATE Archive SET shed='%s', rack='%s', folder='%s' WHERE ID='%d'", ARCHIVE.getShed(), ARCHIVE.getRack(), ARCHIVE.getFolder(), ARCHIVE.getId()));
     }
 
+    /**
+     * Update.
+     *
+     * @param DOCUMENT the document
+     * @throws SQLException the sql exception
+     */
     public void update(final Document DOCUMENT) throws SQLException {
         Location location = DOCUMENT.getLocation();
         int locationInt;
@@ -185,6 +211,13 @@ public class DatabaseUtility {
         stmt.executeUpdate();
     }
 
+    /**
+     * Create tag tag.
+     *
+     * @param tag the tag
+     * @return the tag
+     * @throws SQLException the sql exception
+     */
     public Tag createTag(final String tag) throws SQLException {
         boolean exists = false;
         // using PreparedStatement to exclude SQL-injection and for the possibility to use unescaped characters
@@ -210,6 +243,13 @@ public class DatabaseUtility {
         return new Tag(ID, tag);
     }
 
+    /**
+     * Create tag reference.
+     *
+     * @param TAGID      the tagid
+     * @param DOCUMENTID the documentid
+     * @throws SQLException the sql exception
+     */
     public void createTagReference(final long TAGID, final String DOCUMENTID) throws SQLException {
         PreparedStatement stmt = conn.prepareStatement("SELECT * FROM TagReference WHERE TagID=? AND DocumentID=?");
         stmt.setLong(1, TAGID);
@@ -224,6 +264,13 @@ public class DatabaseUtility {
         }
     }
 
+    /**
+     * Create archive archive.
+     *
+     * @param archiveData the archive data
+     * @return the archive
+     * @throws SQLException the sql exception
+     */
     public Archive createArchive(final String[] archiveData) throws SQLException {
         assert archiveData.length == 3;
 
@@ -249,6 +296,12 @@ public class DatabaseUtility {
         return rs.getInt("seq");
     }
 
+    /**
+     * Remove tag.
+     *
+     * @param tagID the tag id
+     * @throws SQLException the sql exception
+     */
     public void removeTag(final long tagID) throws SQLException {
         PreparedStatement stmt = conn.prepareStatement("DELETE FROM TAG WHERE ID=?");
         stmt.setLong(1, tagID);
@@ -259,6 +312,17 @@ public class DatabaseUtility {
         stmt.executeUpdate();
     }
 
+    /**
+     * Search list.
+     *
+     * @param ID       the id
+     * @param tags     the tags
+     * @param location the location
+     * @param title    the title
+     * @param author   the author
+     * @return the list
+     * @throws SQLException the sql exception
+     */
     public List<Document> search(final String ID, final List<Tag> tags, final String location, final String title, final String author) throws SQLException {
         final List<Document> documents = this.read();
 
@@ -288,6 +352,14 @@ public class DatabaseUtility {
         return documents;
     }
 
+    /**
+     * Create document.
+     *
+     * @param documentID     the document id
+     * @param documentTitle  the document title
+     * @param documentAuthor the document author
+     * @throws SQLException the sql exception
+     */
     public void createDocument(String documentID, String documentTitle, String documentAuthor) throws SQLException {
         PreparedStatement stmt = conn.prepareStatement("INSERT INTO Document (ID, Title, Author) VALUES (?, ?, ?)");
         stmt.setString(1, documentID);
@@ -296,10 +368,22 @@ public class DatabaseUtility {
         stmt.executeUpdate();
     }
 
+    /**
+     * Gets tags.
+     *
+     * @return the tags
+     */
     public List<Tag> getTags() {
         return tags;
     }
 
+    /**
+     * Delete tag reference.
+     *
+     * @param id  the id
+     * @param id1 the id 1
+     * @throws SQLException the sql exception
+     */
     public void deleteTagReference(long id, String id1) throws SQLException {
         PreparedStatement stmt = conn.prepareStatement("DELETE FROM TagReference WHERE DocumentID=? AND TagID=?");
         stmt.setString(1, id1);

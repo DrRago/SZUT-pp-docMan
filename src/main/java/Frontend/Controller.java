@@ -25,6 +25,9 @@ import java.util.List;
 import java.util.Map;
 
 
+/**
+ * The type Controller.
+ */
 public class Controller {
 
     @FXML
@@ -207,6 +210,11 @@ public class Controller {
         return document[0];
     }
 
+    /**
+     * Delete action.
+     *
+     * @throws SQLException the sql exception
+     */
     public void deleteAction() throws SQLException {
         String id = objectTable.getFocusModel().getFocusedItem().get("ID");
         db.deleteDocument(id);
@@ -323,6 +331,11 @@ public class Controller {
         updateTable();
     }
 
+    /**
+     * Execute search.
+     *
+     * @throws SQLException the sql exception
+     */
     public void executeSearch() throws SQLException {
         final int ACTIVESEARCH = 2;
         switch (currentState) {
