@@ -5,6 +5,12 @@ package Location;
  * @author Pascal de Vries
  */
 public class LocationFactory {
+    /**
+     *
+     * @param type The type of the location to be created
+     * @param arguments the arguments depending on the type that's chosen
+     * @return a object of the type location
+     */
     public static Location getLocation(LocationTypes type, String[] arguments) {
         switch (type) {
             case URL:

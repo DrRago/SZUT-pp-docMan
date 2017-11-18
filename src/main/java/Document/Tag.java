@@ -6,7 +6,7 @@ package Document;
  */
 public class Tag {
     private final long id;
-    private String name;
+    private final String name;
 
     public Tag(final long ID, final String NAME) {
         this.id = ID;
@@ -24,10 +24,6 @@ public class Tag {
 
     public String getName() {
         return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     @Override

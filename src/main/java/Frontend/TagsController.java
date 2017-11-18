@@ -31,7 +31,6 @@ public class TagsController {
     private TextField newTag;
     @FXML
     private GridPane gridPane;
-
     @FXML
     private Button tagButtonDelete;
     @FXML
@@ -133,7 +132,7 @@ public class TagsController {
         database.removeTag(removeTag.getId());
     }
 
-    public void initForSelectionOnly(Document emptyDoc, DatabaseUtility database) {
+    void initForSelectionOnly(Document emptyDoc, DatabaseUtility database) {
         this.document = emptyDoc;
         selectOnly = true;
 

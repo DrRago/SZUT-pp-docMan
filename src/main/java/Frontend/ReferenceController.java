@@ -3,7 +3,6 @@ package Frontend;
 import DatabaseUtility.DatabaseUtility;
 import Document.Document;
 import Location.*;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TabPane;
@@ -50,28 +49,9 @@ public class ReferenceController {
         this.database = database;
         Location location = document.getLocation();
         locationType = location.getLocationType();
-        switch (locationType) {
-            case ARCHIVE:
-                setLocationArchive((Archive) location);
-                break;
-            case FILE:
-                setLocationFile((File) location);
-                break;
-            case URL:
-                setLocationURL((URL) location);
-        }
 
-        tabPane.addEventHandler(KeyEvent.KEY_PRESSED, (key) -> {
-            if (key.getCode() == KeyCode.ESCAPE) {
-                this.close();
-            } else if (key.getCode() == KeyCode.ENTER) {
-                try {
-                    this.saveAndClose();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
+        setInitialLocation();
+        addKeyEventListener();
 
         createFocusEvent(locationTextFile, LocationTypes.FILE);
 
@@ -182,7 +162,7 @@ public class ReferenceController {
         this.close();
     }
 
-    public void openAction(ActionEvent actionEvent) {
+    public void openAction() {
         FileChooser chooser = new FileChooser();
         chooser.setTitle("Open XML File");
         chooser.setInitialDirectory(new java.io.File(System.getProperty("user.dir")));
@@ -193,10 +173,7 @@ public class ReferenceController {
         }
     }
 
-    public void initForSelectionOnly(Document emptyDoc, DatabaseUtility db) {
-        selectOnly = true;
-
-        this.document = emptyDoc;
+    private void setInitialLocation() {
         Location location = document.getLocation();
         locationType = location.getLocationType();
         switch (locationType) {
@@ -209,7 +186,9 @@ public class ReferenceController {
             case URL:
                 setLocationURL((URL) location);
         }
+    }
 
+    private void addKeyEventListener() {
         tabPane.addEventHandler(KeyEvent.KEY_PRESSED, (key) -> {
             if (key.getCode() == KeyCode.ESCAPE) {
                 this.close();
@@ -221,6 +200,15 @@ public class ReferenceController {
                 }
             }
         });
+    }
+
+    void initForSelectionOnly(Document emptyDoc) {
+        selectOnly = true;
+
+        this.document = emptyDoc;
+
+        setInitialLocation();
+        addKeyEventListener();
 
         createFocusEvent(locationTextFile, LocationTypes.FILE);
 

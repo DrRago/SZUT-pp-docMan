@@ -102,10 +102,6 @@ public class DatabaseUtility {
         return documentList;
     }
 
-    private void removeIDFromTable(final String TABLE, final int ID) throws SQLException {
-        conn.createStatement().execute(String.format("DELETE FROM %s WHERE ID='%d'", TABLE, ID));
-    }
-
     public void deleteDocument(final String ID) throws SQLException {
         PreparedStatement stmt;
 
@@ -143,12 +139,6 @@ public class DatabaseUtility {
 
     private void update(final Archive ARCHIVE) throws SQLException {
         conn.createStatement().execute(String.format("UPDATE Archive SET shed='%s', rack='%s', folder='%s' WHERE ID='%d'", ARCHIVE.getShed(), ARCHIVE.getRack(), ARCHIVE.getFolder(), ARCHIVE.getId()));
-    }
-
-    public void update(final Tag TAG) throws SQLException {
-        conn.createStatement().execute(String.format("UPDATE Tag SET Name='%s' WHERE ID='%d'", TAG.getName(), TAG.getId()));
-        tags.removeIf(e -> e.getId() == TAG.getId());
-        tags.add(TAG);
     }
 
     public void update(final Document DOCUMENT) throws SQLException {
@@ -244,23 +234,19 @@ public class DatabaseUtility {
         stmt.setString(3, archiveData[2]);
         stmt.executeUpdate();
 
-        String[] archiveDataWithID = new String[]{String.valueOf(getAutoIncrementValue("Archive")), archiveData[0], archiveData[1], archiveData[2]};
+        String[] archiveDataWithID = new String[]{String.valueOf(getAutoIncrementValueOfArchive()), archiveData[0], archiveData[1], archiveData[2]};
 
         // Build Archive and return it
         return (Archive) LocationFactory.getLocation(LocationTypes.ARCHIVE, archiveDataWithID);
     }
 
-    private int getAutoIncrementValue(String table) throws SQLException {
+    private int getAutoIncrementValueOfArchive() throws SQLException {
         PreparedStatement stmt = conn.prepareStatement("SELECT seq FROM sqlite_sequence WHERE name=?");
-        stmt.setString(1, table);
+        stmt.setString(1, "Archive");
         ResultSet rs = stmt.executeQuery();
         rs.next();
 
         return rs.getInt("seq");
-    }
-
-    public void removeTagFromDocument(final long tagID, final String documentID) throws SQLException {
-        conn.createStatement().execute(String.format("DELETE FROM TagReference WHERE TagID='%d' AND DocumentID='%s'", tagID, documentID));
     }
 
     public void removeTag(final long tagID) throws SQLException {

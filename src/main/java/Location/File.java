@@ -5,13 +5,9 @@ package Location;
  * @author Pascal de Vries
  */
 public class File implements Location {
-    private String filePath;
+    private final String filePath;
 
     public File(final String FILEPATH) {
-        this.filePath = FILEPATH;
-    }
-
-    public void setFilePath(final String FILEPATH) {
         this.filePath = FILEPATH;
     }
 

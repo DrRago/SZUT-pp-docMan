@@ -7,7 +7,6 @@ import Location.LocationTypes;
 import config.Config;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -37,17 +36,7 @@ public class Controller {
     @FXML
     private TableColumn<Map, String> columnTitle;
     @FXML
-    private Button buttonAdd;
-    @FXML
-    private Button buttonDelete;
-    @FXML
-    private Button buttonUpdate;
-    @FXML
     private Button buttonSearch;
-    @FXML
-    private Button buttonAddTag;
-    @FXML
-    private Button buttonAddLocation;
     @FXML
     private TextField textID;
     @FXML
@@ -72,7 +61,6 @@ public class Controller {
     // search states
     private final int IDLE = 0;
     private final int FILLFORMULAR = 1;
-    private final int ACTIVESEARCH = 2;
 
     private int currentState = IDLE;
 
@@ -219,7 +207,7 @@ public class Controller {
         return document[0];
     }
 
-    public void deleteAction(ActionEvent actionEvent) throws SQLException {
+    public void deleteAction() throws SQLException {
         String id = objectTable.getFocusModel().getFocusedItem().get("ID");
         db.deleteDocument(id);
         documentList = db.read();
@@ -293,7 +281,7 @@ public class Controller {
         stage.showAndWait();
 
         if (currentState == FILLFORMULAR) {
-            textTags.setText(emptyDoc.getTags().toString().replaceAll("\\[|\\]", ""));
+            textTags.setText(emptyDoc.getTags().toString().replaceAll("\\[|]", ""));
         }
         updateTable();
     }
@@ -303,14 +291,16 @@ public class Controller {
         final FXMLLoader loader = new FXMLLoader();
 
         //Load the gui.fxml
-        Parent root = loader.load(getClass().getClassLoader().getResource("reference.fxml").openStream());
+        java.net.URL URL = getClass().getClassLoader().getResource("reference.fxml");
+        assert URL != null;
+        Parent root = loader.load(URL.openStream());
 
         Document emptyDoc = new Document("", "", "", LocationFactory.getLocation(LocationTypes.URL, new String[]{""}), new ArrayList<>());
 
         //Get the Controller from the FXMLLoader
         ReferenceController controller = loader.getController();
         if (currentState == FILLFORMULAR) {
-            controller.initForSelectionOnly(emptyDoc, db);
+            controller.initForSelectionOnly(emptyDoc);
         } else {
             controller.init(getFocusedDocument(), db);
         }
@@ -333,7 +323,8 @@ public class Controller {
         updateTable();
     }
 
-    public void executeSearch(ActionEvent actionEvent) throws SQLException {
+    public void executeSearch() throws SQLException {
+        final int ACTIVESEARCH = 2;
         switch (currentState) {
             case IDLE:
                 buttonSearch.setText("execute search");
