@@ -38,9 +38,9 @@ public class DatabaseUtility {
     /**
      * update the tag list of the databaseUtility
      *
-     * @throws SQLException
+     * @throws SQLException the sql exception
      */
-    private void updateTagList() throws SQLException {
+    public void updateTagList() throws SQLException {
         tags.clear();
         ResultSet rs = conn.createStatement().executeQuery("SELECT ID, Name FROM Tag");
 
@@ -53,8 +53,8 @@ public class DatabaseUtility {
      * Get an archive by ID
      *
      * @param ARCHIVEID the archive id
-     * @return a String array with all information for the initialization of the archve object
-     * @throws SQLException
+     * @return a String array with all information for the initialization of the archive object
+     * @throws SQLException the sql exception
      */
     private String[] getArchiveFromID(final int ARCHIVEID) throws SQLException {
         if (ARCHIVEID != 0) {
@@ -76,7 +76,7 @@ public class DatabaseUtility {
      *
      * @param ID the document if
      * @return the tag list
-     * @throws SQLException
+     * @throws SQLException the sql exception
      */
     private List<Tag> getTagListFromDocumentID(final String ID) throws SQLException {
         final List<Tag> TAGS = new ArrayList<Tag>();
@@ -232,7 +232,7 @@ public class DatabaseUtility {
     }
 
     /**
-     * Create a tag in the database and returnsit
+     * Create a tag in the database and return it
      *
      * @param tag the tag to create
      * @return the tag that has been created
@@ -285,7 +285,7 @@ public class DatabaseUtility {
     }
 
     /**
-     * Create an archive in the databse and return it
+     * Create an archive in the database and return it
      *
      * @param archiveData the archive data
      * @return the archive
@@ -352,6 +352,7 @@ public class DatabaseUtility {
         }
 
         // filter Tags (removes nothing if tags is empty
+        System.out.println(tags);
         documents.removeIf(e -> !e.getTags().containsAll(tags));
 
         // filter location

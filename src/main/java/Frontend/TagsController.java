@@ -112,7 +112,7 @@ public class TagsController {
     /**
      * Add a tag to the database
      *
-     * @throws SQLException
+     * @throws SQLException the sql exception
      */
     @FXML
     private void addTag() throws SQLException {
@@ -133,7 +133,7 @@ public class TagsController {
     /**
      * Delete a tag from the database
      *
-     * @throws SQLException
+     * @throws SQLException the sql exception
      */
     @FXML
     private void deleteTag() throws SQLException {

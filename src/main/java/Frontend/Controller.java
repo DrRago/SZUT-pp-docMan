@@ -2,6 +2,7 @@ package Frontend;
 
 import DatabaseUtility.DatabaseUtility;
 import Document.Document;
+import Document.Tag;
 import Location.LocationFactory;
 import Location.LocationTypes;
 import config.Config;
@@ -66,6 +67,7 @@ public class Controller {
     private final int FILLFORMULAR = 1;
 
     private int currentState = IDLE;
+    private List<Tag> searchedTags;
 
 
     // the javafx initialization method
@@ -273,7 +275,7 @@ public class Controller {
     /**
      * Update a document in the table
      *
-     * @throws SQLException
+     * @throws SQLException the sql exception
      */
     @FXML
     private void updateDocument() throws SQLException {
@@ -292,8 +294,8 @@ public class Controller {
     /**
      * Open the tag manager for the selected document
      *
-     * @throws IOException
-     * @throws SQLException
+     * @throws IOException the io exception
+     * @throws SQLException the sql exception
      */
     @FXML
     private void openTagManager() throws IOException, SQLException {
@@ -328,8 +330,11 @@ public class Controller {
 
         stage.showAndWait();
 
+        db.updateTagList();
+
         if (currentState == FILLFORMULAR) {
             textTags.setText(emptyDoc.getTags().toString().replaceAll("\\[|]", ""));
+            this.searchedTags = emptyDoc.getTags();
         }
         updateTable();
     }
@@ -337,8 +342,8 @@ public class Controller {
     /**
      * Open the reference manager for the selected document
      *
-     * @throws IOException
-     * @throws SQLException
+     * @throws IOException the io exception
+     * @throws SQLException the sql exception
      */
     @FXML
     private void openReferenceManager() throws IOException, SQLException {
@@ -394,7 +399,7 @@ public class Controller {
                 break;
             case FILLFORMULAR:
                 buttonSearch.setText("reset");
-                List<Document> searchResults = db.search(textID.getText(), new ArrayList<>(), textLocation.getText(), textTitle.getText(), textAuthor.getText());
+                List<Document> searchResults = db.search(textID.getText(), searchedTags, textLocation.getText(), textTitle.getText(), textAuthor.getText());
                 updateTable(searchResults);
                 currentState = ACTIVESEARCH;
                 break;

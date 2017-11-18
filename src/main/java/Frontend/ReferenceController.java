@@ -173,7 +173,7 @@ public class ReferenceController {
     /**
      * save the changed reference and close the window
      *
-     * @throws SQLException
+     * @throws SQLException the sql exception
      */
     @FXML
     private void saveAndClose() throws SQLException {
